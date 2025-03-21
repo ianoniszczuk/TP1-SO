@@ -1,0 +1,93 @@
+/*El jugador debe agarrar la info del tablero que esta en la shm y a partir de eso definir un movimiento.
+
+Comunicarse atravez del pipe con el master e indicar el movimiento que quiere hacer
+
+El master crea la shm y los pipes para cada jugador
+
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <semaphore.h>
+
+typedef struct {
+    char name[16]; // Nombre del jugador
+    unsigned int points; // Puntaje
+    unsigned int invaid_movements; // Cantidad de solicitudes de movimientos inválidas realizadas
+    unsigned int valid_movements; // Cantidad de solicitudes de movimientos válidas realizadas
+    unsigned short x, y; // Coordenadas x e y en el tablero
+    pid_t pid; // Identificador de proceso
+    bool blocked; // Indica si el jugador está bloqueado
+} Player;
+
+typedef struct {
+    unsigned short width; // Ancho del tablero
+    unsigned short height; // Alto del tablero
+    unsigned int player_count; // Cantidad de jugadores
+    Player players[9]; // Lista de jugadores
+    bool game_over; // Indica si el juego se ha terminado
+    int board[]; // Puntero al comienzo del tablero. fila-0, fila-1, ..., fila-n-1
+} GameState;
+
+typedef struct {
+sem_t A; // Se usa para indicarle a la vista que hay cambios por imprimir
+sem_t B; // Se usa para indicarle al master que la vista terminó de imprimir
+sem_t C; // Mutex para evitar inanición del master al acceder al estado
+sem_t D; // Mutex para el estado del juego
+sem_t E; // Mutex para la siguiente variable
+unsigned int F; // Cantidad de jugadores leyendo el estado
+} GameSync;
+
+int main(){
+
+    int fd1 = shm_open("/game_state", O_RDONLY, 0666);
+    int fd2 = shm_open("/game_sync", O_RDONLY, 0666);
+
+    if(fd1 == -1 || fd2 == -1){
+        perror("Error aca shm_error");
+        return EXIT_FAILURE;
+    }
+
+    GameState *game = mmap(NULL, sizeof(GameState),PROT_READ, MAP_SHARED, fd1,0);
+    GameSync *sync = mmap(NULL, sizeof(GameSync),PROT_READ, MAP_SHARED, fd2,0);
+
+    if(game == MAP_FAILED || sync == MAP_FAILED){
+        perror("Error en mmap1");
+        close(fd1);
+        close(fd2);
+        exit(EXIT_FAILURE);
+    }
+    unsigned short width = game->width;
+    unsigned short height = game->height;
+
+    size_t total_size = sizeof(GameState) + width * height * sizeof(int);
+
+    munmap(game,sizeof(GameState));
+
+    game = mmap(NULL,total_size,PROT_READ, MAP_SHARED, fd1,0);
+
+    if(game == MAP_FAILED){
+        perror("Error en mmap2");
+        close(fd1);
+        close(fd2);
+        exit(EXIT_FAILURE);
+    }
+
+    close(fd1);
+
+    unsigned char movimiento = 0;
+
+    if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
+            perror("Error al escribir en el pipe");
+            return EXIT_FAILURE;
+        }
+
+    munmap(game,total_size);
+    munmap(sync,sizeof(GameSync));
+    close(fd2);
+    return EXIT_SUCCESS;
+}
