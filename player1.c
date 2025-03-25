@@ -77,23 +77,23 @@ int main(void) {
     // Bucle principal del jugador: mientras no esté bloqueado, lee el estado y envía movimientos.
     while (!game->game_over) {
         // Patrón lectores-escritores para leer el estado del juego.
-        sem_wait(&sync->E);
-        sync->F++;
-        if (sync->F == 1) {
-            sem_wait(&sync->D);  // El primer lector bloquea al escritor
-        }
-        sem_post(&sync->E);
+        // sem_wait(&sync->E);
+        // sync->F++;
+        // if (sync->F == 1) {
+        //     sem_wait(&sync->D);  // El primer lector bloquea al escritor
+        // }
+        // sem_post(&sync->E);
 
-        // Aquí se puede agregar lógica para elegir un movimiento válido; en este ejemplo se hace de forma aleatoria.
-        unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7
+        // // Aquí se puede agregar lógica para elegir un movimiento válido; en este ejemplo se hace de forma aleatoria.
+         unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7
 
-        // Liberar la sección crítica de lectura.
-        sem_wait(&sync->E);
-        sync->F--;
-        if (sync->F == 0) {
-            sem_post(&sync->D);  // El último lector libera al escritor
-        }
-        sem_post(&sync->E);
+        // // Liberar la sección crítica de lectura.
+        // sem_wait(&sync->E);
+        // sync->F--;
+        // if (sync->F == 0) {
+        //     sem_post(&sync->D);  // El último lector libera al escritor
+        // }
+        // sem_post(&sync->E);
 
         // Enviar el movimiento al máster a través del pipe (STDOUT se asume que está conectado al pipe del máster)
         if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
