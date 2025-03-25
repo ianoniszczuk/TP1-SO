@@ -79,12 +79,30 @@ int main(){
 
     close(fd1);
 
-    unsigned char movimiento = 0;
+        // sem_wait(&sync->C);
+        // sync->F++;
+        // if(sync->F == 1){   
+        //     sem_wait(&sync->D);
+        // }
 
-    if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
+        // sem_post(&sync->C);
+
+        // //Cada player lee lo q quiera leer
+
+        // sem_wait(&sync->C);
+        // if(sync->F == 1){
+        //     sem_post(&sync->D);
+        // }
+        // sync->F--;
+        // sem_post(&sync->C);
+        
+
+        unsigned char movimiento = 0;
+
+        if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
             perror("Error al escribir en el pipe");
-            return EXIT_FAILURE;
         }
+
 
     munmap(game,total_size);
     munmap(sync,sizeof(GameSync));

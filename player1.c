@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <semaphore.h>
+#include <time.h>
 
 // Estructura para cada jugador.
 typedef struct {
@@ -24,34 +25,24 @@ typedef struct {
     unsigned int player_count;
     Player players[9];
     bool game_over;
-    int board[];  // Tablero dinámico: fila-0, fila-1, ..., fila-(height-1)
+    int board[];  // Tablero dinámico
 } GameState;
 
 // Estructura para la sincronización.
 typedef struct {
-    sem_t A; // Indica a la vista que hay cambios por imprimir
-    sem_t B; // Indica al máster que la vista terminó de imprimir
+    sem_t A; // Vista
+    sem_t B; // Master
     sem_t C; // Mutex para evitar inanición del máster al acceder al estado
     sem_t D; // Mutex para el estado del juego (escritor)
     sem_t E; // Mutex para la variable F (lectores)
     unsigned int F; // Cantidad de jugadores leyendo el estado
 } GameSync;
 
-// Función que imprime el tablero.
-void print_board(GameState *game) {
-    printf("Tablero (%hu x %hu):\n", game->width, game->height);
-    for (int i = 0; i < game->height; i++) {
-        for (int j = 0; j < game->width; j++) {
-            printf("%d ", game->board[i * game->width + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
 int main(void) {
+    srand(time(NULL));
+
     int fd_state = shm_open("/game_state", O_RDONLY, 0666);
-    int fd_sync = shm_open("/game_sync", O_RDONLY, 0666);
+    int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
     if (fd_state == -1 || fd_sync == -1) {
         perror("Error abriendo la memoria compartida");
         exit(EXIT_FAILURE);
@@ -76,18 +67,41 @@ int main(void) {
     close(fd_state);
 
     // Mapeamos la memoria compartida para la sincronización.
-    GameSync *sync = mmap(NULL, sizeof(GameSync), PROT_READ, MAP_SHARED, fd_sync, 0);
+    GameSync *sync = mmap(NULL, sizeof(GameSync), PROT_READ | PROT_WRITE, MAP_SHARED, fd_sync, 0);
     if (sync == MAP_FAILED) {
         perror("Error mapeando game_sync");
         exit(EXIT_FAILURE);
     }
     close(fd_sync);
 
-    // Bucle principal: espera la señal del máster para imprimir y notifica cuando termina.
+    // Bucle principal del jugador: mientras no esté bloqueado, lee el estado y envía movimientos.
     while (!game->game_over) {
-        sem_wait(&sync->A);  // Espera a que el máster indique que hay cambios
-        print_board(game);
-        sem_post(&sync->B);  // Indica al máster que terminó de imprimir
+        // Patrón lectores-escritores para leer el estado del juego.
+        sem_wait(&sync->E);
+        sync->F++;
+        if (sync->F == 1) {
+            sem_wait(&sync->D);  // El primer lector bloquea al escritor
+        }
+        sem_post(&sync->E);
+
+        // Aquí se puede agregar lógica para elegir un movimiento válido; en este ejemplo se hace de forma aleatoria.
+        unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7
+
+        // Liberar la sección crítica de lectura.
+        sem_wait(&sync->E);
+        sync->F--;
+        if (sync->F == 0) {
+            sem_post(&sync->D);  // El último lector libera al escritor
+        }
+        sem_post(&sync->E);
+
+        // Enviar el movimiento al máster a través del pipe (STDOUT se asume que está conectado al pipe del máster)
+        if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
+            perror("Error escribiendo movimiento");
+            break;
+        }
+
+        usleep(500000);  // Retardo de 0.5 segundos para simular tiempo de decisión
     }
 
     munmap(game, total_size);
