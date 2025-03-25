@@ -1,0 +1,1 @@
+./ChompChamps -p ./executables/player1 -v ./executables/view

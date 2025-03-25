@@ -1,6 +1,0 @@
-gcc -o ./executables/player2 -Wall ./player2.c
-
-gcc -o ./executables/player1 -Wall ./player1.c
-
-
-./executables/ChompChamps -p ./executables/player2
