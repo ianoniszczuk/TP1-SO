@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <unistd.h>
 #include <stdbool.h>
 #include <semaphore.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <errno.h>
 #include <time.h>
+#include <sys/select.h>
 #include <getopt.h>
 
 // Estructura para cada jugador.

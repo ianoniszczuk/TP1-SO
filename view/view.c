@@ -8,30 +8,22 @@ bool flag = false;
 
 // Función que imprime el tablero.
 
-void print_board(GameState *game, int *matrix) {
+void print_board(GameState *game) {
 
     const unsigned short width = game->width;
     const unsigned short height = game->height;
     const unsigned int player_count = game->player_count;
 
-    printf("Tablero (%hu x %hu):\n", width, height);
+    printf("Tablero (%hux %hu):\n", width, height);
 
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-            for(int k = 0; k < player_count; k++) {
-                flag = false;
-                if(game->players[k].x == j && game->players[k].y == i) {
-                    if(matrix[i * width + j] > 0) puntajes[k] += matrix[i * width + j];
-                    matrix[i * width + j] = -k;
-                    continue;
-                }
+            int toPrint = game->board[i * width + j];
+            if(toPrint < 0){
+                printf("%d ", toPrint);
+            } else {
+                printf(" %d ", toPrint);
             }
-            if(matrix[i * width + j] == 0){
-                printf("-0 ");
-            }
-            else if(matrix[i * width + j] < 0){
-                printf("%d ",matrix[i * width + j]);
-            } else printf(" %d ", matrix[i * width + j]);
         }
         printf("\n");
     }
@@ -40,14 +32,17 @@ void print_board(GameState *game, int *matrix) {
     for(int i = 0; i < player_count; i++) {
         printf("Jugador numero %d, posicion actual : (%d;%d), puntaje : %d\n", i, game->players[i].x, game->players[i].y, puntajes[i]);
     }
-
     printf("\n");
 }
 
 int main(void) {
+
+    // TODO: pasar a un archivo shm.c 
+    // TODO : chequear tema 666
     
     int fd_state = shm_open("/game_state", O_RDONLY, 0666);
     int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
+
     if (fd_state == -1 || fd_sync == -1) {
         perror("Error abriendo la memoria compartida");
         exit(EXIT_FAILURE);
@@ -80,20 +75,17 @@ int main(void) {
     close(fd_sync);
     // Bucle principal: espera la señal del máster para imprimir y notifica cuando termina.
 
-    int matrix[width * height];
 
-    for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
-            matrix[i * width + j] = game->board[i * width + j];
-        }
-    }
-
+    //TODO : ver de sacar sleep(2)
+    
     while (!game->game_over) {
-        sleep(2);
+        //sleep(2);
         sem_wait(&sync->A);  // Espera a que el máster indique que hay cambios
-        print_board(game, matrix);
+        print_board(game);
         sem_post(&sync->B);  // Indica al máster que terminó de imprimir
     }
+
+    //TODO: Chequera munmap 
 
     munmap(game, total_size);
     munmap(sync, sizeof(GameSync));

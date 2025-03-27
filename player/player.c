@@ -4,6 +4,7 @@ int main(void) {
 
     int fd_state = shm_open("/game_state", O_RDONLY, 0666);
     int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
+    
     if (fd_state == -1 || fd_sync == -1) {
         perror("Error abriendo la memoria compartida");
         exit(EXIT_FAILURE);
@@ -54,7 +55,7 @@ int main(void) {
         }
         sem_post(&sync->E);
 
-        //Logica de player, mejorar dsp para competencia
+        //TODO : Logica de player, mejorar dsp para competencia
         unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7
 
         
