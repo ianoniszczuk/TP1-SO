@@ -84,9 +84,11 @@ int main(int argc, char* argv[]){
 
     int status;
 
-    wait_for_children();//Espero a q terminen los hijos.
+    while(wait(&status) > 0); //Espero a q terminen los hijos
 
-    clean_resources();
+    //wait_for_children();//Espero a q terminen los hijos.
+
+    clean_resources(state, sizeof(GameState) + board_size, sync);
 
     printf("Juego terminado\n");
 
@@ -133,7 +135,7 @@ void init_shared_memory(GameState **state,size_t board_size,unsigned short width
     close(fd);
 }
 
-init_sync_struct(GameSync **sync){
+void init_sync_struct(GameSync **sync){
 
     int fd = shm_open(GAME_SYNC, O_CREAT | O_RDWR, 0666);
     if (fd == -1) {
@@ -325,7 +327,7 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
     }
 }
 
-void cleanup_resources(GameState *state, size_t state_size, GameSync *sync) {
+void clean_resources(GameState *state, size_t state_size, GameSync *sync) {
     // Destruir semáforos
     sem_destroy(&sync->A);
     sem_destroy(&sync->B);
