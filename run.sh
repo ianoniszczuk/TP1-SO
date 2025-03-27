@@ -1,1 +1,1 @@
-./executables/ChompChamps -p ./executables/player ./executables/player -v ./executables/view
+./executables/master -p ./executables/player ./executables/player -v ./executables/view

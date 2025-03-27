@@ -16,21 +16,17 @@ void print_board(GameState *game) {
 
     printf("Tablero (%hux %hu):\n", width, height);
 
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            int toPrint = game->board[i * width + j];
-            if(toPrint < 0){
-                printf("%d ", toPrint);
-            } else {
-                printf(" %d ", toPrint);
-            }
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int toPrint = game->board[y*width + x];
+            printf("%s%d ", (toPrint < 0 ? "" : " "), toPrint);
         }
         printf("\n");
     }
     printf("\n");
 
     for(int i = 0; i < player_count; i++) {
-        printf("Jugador numero %d, posicion actual : (%d;%d), puntaje : %d\n", i, game->players[i].x, game->players[i].y, puntajes[i]);
+        printf("Jugador numero %d, posicion actual : (%d;%d), puntaje : %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points);
     }
     printf("\n");
 }
