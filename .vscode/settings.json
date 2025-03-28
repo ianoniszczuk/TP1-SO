@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "mman.h": "c",
-        "view.h": "c"
+        "view.h": "c",
+        "master.h": "c",
+        "unistd.h": "c"
     }
 }
