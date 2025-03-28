@@ -1,4 +1,5 @@
 #include "sharedMemory.h"
+#include "errorHandling.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,15 +8,13 @@ void *mapSharedMemory(const char *name, size_t size, int *fd, int create_flag) {
     
     *fd = shm_open(name, flags, 0666);
     if(*fd == -1) {
-        perror("shm_open");
-        exit(EXIT_FAILURE);
+        ERROR_EXIT("shm_open");
     }
 
     if(create_flag) {
         if(ftruncate(*fd, size) == -1) {
             destroySharedMemory(name, NULL, *fd, size);
-            perror("ftruncate");
-            exit(EXIT_FAILURE);
+            ERROR_EXIT("ftruncate");
         }
     }
 
@@ -27,8 +26,7 @@ void *mapSharedMemory(const char *name, size_t size, int *fd, int create_flag) {
         } else {
             closeSharedMemory(NULL,*fd, size);
         }
-        perror("mmap");
-        exit(EXIT_FAILURE);
+        ERROR_EXIT("mmap");
     }
     return shmBasePtr;
 }
