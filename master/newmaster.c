@@ -244,7 +244,7 @@ void distribute_players(GameState *state){
         state->players[i].valid_movements =0;
         state->players[i].blocked =false;
         state->players[i].pid=0;;
-        state->board[state->players[i].y * state->width+ state->players[i].x] = 0;
+        state->board[state->players[i].y * state->width+ state->players[i].x] = -i;
     }    
 
 }
@@ -299,8 +299,6 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
             int idx = (current_player + i) % num_players;
             if(FD_ISSET(pipes[idx][0],&rfds)){
 
-                
-
                 sem_wait(&sync->C);
                 sem_wait(&sync->D);
 
@@ -308,48 +306,41 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
 
                 unsigned char move;
                 int bytes = read(pipes[idx][0],&move,sizeof(move));
-                if(bytes <= 0){
-                    state->players[i].blocked = true;
-                    update = false;
-                }
-                if(move > 7){
-                    state->players[i].invalid_movements++;
-                    update = false;
-                }
 
-                int new_x = state->players[i].x + dx[move];
-                int new_y = state->players[i].y + dy[move];
+                // if(bytes <= 0){
+                //     state->players[idx].blocked = true;
+                //     update = false;
+                // }
 
-                if(new_x < 0 || new_x >= state->width || new_y < 0 || new_y >= state->height){
-                    state->players[i].invalid_movements++;
-                    update = false;
-                }
 
+                int new_x = state->players[idx].x + dx[move];
+                int new_y = state->players[idx].y + dy[move];
                 int cell_index = new_y * state->width + new_x;
 
-                if(cell_index <= 0){
-                    state->players[i].invalid_movements++;
+
+                if(new_x < 0 || new_x >= state->width || new_y < 0 || new_y >= state->height || move > 7 || state->board[cell_index] <= 0){
+                    state->players[idx].invalid_movements++;
                     update = false;
                 }
 
                 if(update){
-                    state->players[i].valid_movements++;
-                    state->players[i].points += state->board[cell_index];
-                    state->players[i].x = state->players[i].x + dx[move];
-                    state->players[i].y = state->players[i].y + dy[move];
+                    last_valid_time = time(NULL);
+                    state->players[idx].valid_movements++;
+                    state->players[idx].points += state->board[cell_index];
+                    state->players[idx].x = state->players[idx].x + dx[move];
+                    state->players[idx].y = state->players[idx].y + dy[move];
                     state->board[cell_index] = -(idx);
                 }
             
                 sem_post(&sync->D);
                 sem_post(&sync->C);
 
-                last_valid_time = time(NULL);
                 current_player = (idx + 1) % num_players;
 
                 sem_post(&sync->A); //Indico a la vista q hay cambios
                 sem_wait(&sync->B); //Espero a q la vista termine de imprimir
 
-                usleep(delay_ms);
+                usleep(delay_ms * 10000);
 
                 break;
             }

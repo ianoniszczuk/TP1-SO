@@ -1,1 +1,1 @@
-./executables/master -p ./executables/player ./executables/player -v ./executables/view
+./executables/newmaster.o -p ./executables/player.o ./executables/player.o -v ./executables/view.o
