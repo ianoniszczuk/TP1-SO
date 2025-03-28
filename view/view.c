@@ -26,7 +26,7 @@ void print_board(GameState *game) {
     printf("\n");
 
     for(int i = 0; i < player_count; i++) {
-        printf("Jugador numero %d, posicion actual : (%d;%d), puntaje : %d, movimientos invalidos: %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points, game->players[i].invalid_movements);
+        printf("Jugador  %d, posicion actual : (%d;%d), puntaje : %d, movs invalidos : %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points,game->players[i].invalid_movements);
     }
     printf("\n");
 }
