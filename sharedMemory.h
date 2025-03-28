@@ -1,7 +1,6 @@
-#ifndef __SHAREDMEMORY_H
-#define __SHAREDMEMORY_H
+#ifndef SHARED_MEMORY_H
+#define SHARED_MEMORY_H
 
-#include <semaphore.h>
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
