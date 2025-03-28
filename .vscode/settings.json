@@ -3,6 +3,13 @@
         "mman.h": "c",
         "view.h": "c",
         "master.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "time.h": "c",
+        "string.h": "c",
+        "errno.h": "c",
+        "wait.h": "c",
+        "stdlib.h": "c",
+        "stat.h": "c",
+        "type_traits": "c"
     }
 }

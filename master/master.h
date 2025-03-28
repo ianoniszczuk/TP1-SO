@@ -55,6 +55,6 @@ void create_players_and_view(char *view_path, char* players_paths[], int num_pla
 
 void distribute_players(GameState *state);
 
-void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_players, int timeout);
+void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_players, int timeout,int delay_m);
 
 void clean_resources(GameState *state, size_t state_size, GameSync *sync);

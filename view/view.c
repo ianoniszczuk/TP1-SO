@@ -26,7 +26,7 @@ void print_board(GameState *game) {
     printf("\n");
 
     for(int i = 0; i < player_count; i++) {
-        printf("Jugador numero %d, posicion actual : (%d;%d), puntaje : %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points);
+        printf("Jugador numero %d, posicion actual : (%d;%d), puntaje : %d, movimientos invalidos: %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points, game->players[i].invalid_movements);
     }
     printf("\n");
 }
@@ -75,7 +75,6 @@ int main(void) {
     //TODO : ver de sacar sleep(2)
     
     while (!game->game_over) {
-        //sleep(2);
         sem_wait(&sync->A);  // Espera a que el máster indique que hay cambios
         print_board(game);
         sem_post(&sync->B);  // Indica al máster que terminó de imprimir
