@@ -13,6 +13,8 @@ int main(int argc, char * argv[]){
     int timeout_sec = 10;        // Valor por defecto: 10 seg
     unsigned int seed = 0;       // Si no se pasa, se usará time(NULL)
     char *view_path = NULL;      // Por defecto: sin vista
+    char * arg_width = NULL;
+    char * arg_height = NULL;
 
     // Array para guardar las rutas de los jugadores.
     char *player_paths[MAX_PLAYERS];
@@ -26,6 +28,7 @@ int main(int argc, char * argv[]){
     while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p")) != -1) {
         switch (opt) {
             case 'w':
+                arg_width = optarg;
                 width = (unsigned short)atoi(optarg);
                 if (width < 10) {
                     fprintf(stderr, "Advertencia: width menor a 10, se ajusta a 10.\n");
@@ -33,6 +36,7 @@ int main(int argc, char * argv[]){
                 }
                 break;
             case 'h':
+                arg_height = optarg;
                 height = (unsigned short)atoi(optarg);
                 if (height < 10) {
                     fprintf(stderr, "Advertencia: height menor a 10, se ajusta a 10.\n");
@@ -100,7 +104,7 @@ int main(int argc, char * argv[]){
 
     create_pipes(pipes, num_players); //Crear todos los pipes para los players
 
-    create_players_and_view(view_path, player_paths ,num_players,pipes,state); //Crear los procesos de los players 
+    create_players_and_view(view_path, player_paths ,num_players,pipes,state, arg_width, arg_height); //Crear los procesos de los players 
 
      distribute_players(state);
 
@@ -193,9 +197,12 @@ void create_pipes(int pipes[][2], int num_players){
 
 //TODO : FALTAN CERRAR LOS PIPES
 
-void create_players_and_view(char *view_path, char *player_paths[],int num_players,int pipes[][2],GameState *state){
+void create_players_and_view(char *view_path, char *player_paths[],int num_players,int pipes[][2],GameState *state, char * arg_width, char* arg_height){
 
     pid_t pid;
+
+    char * args[2] = {arg_width,arg_height};
+
 
     if(view_path != NULL){
         pid = fork();
@@ -204,7 +211,7 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
             exit(EXIT_FAILURE);
         }
         else if(pid == 0){
-            execve(view_path, NULL,NULL); //esto es sin argumentos, hay q crearlos
+            execve(view_path, args,NULL); //esto es sin argumentos, hay q crearlos
             perror("Error en execve");
             exit(EXIT_FAILURE);
         }
@@ -223,7 +230,7 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
                 exit(EXIT_FAILURE);
             }
 
-            execve(player_paths[i], NULL,NULL); //esto es sin argumentos, hay q crearlos
+            execve(player_paths[i], args,NULL); //esto es sin argumentos, hay q crearlos
             perror("Error en execve");
             exit(EXIT_FAILURE);
         } else {

@@ -52,7 +52,7 @@ void init_sync_struct(GameSync **sync);
 
 void create_pipes();
 
-void create_players_and_view(char *view_path, char* players_paths[], int num_players, int pipes[][2],GameState *state);
+void create_players_and_view(char *view_path, char *player_paths[],int num_players,int pipes[][2],GameState *state, char * arg_width, char* arg_height);
 
 void distribute_players(GameState *state);
 
