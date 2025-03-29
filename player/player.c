@@ -4,9 +4,6 @@ int main(void) {
 
     int player_number;
 
-    int dx[8] = {0,1,1,1,0,-1,-1,-1};
-    int dy[8] = {-1,-1,0,1,1,1,0,-1};
-
     int fd_state = shm_open("/game_state", O_RDONLY, 0666);
     int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
     
@@ -54,9 +51,9 @@ int main(void) {
 
         //Chequeo si estoy bloqueado
 
-        // if(game->players[player_number].blocked){
-        //     break;
-        // }
+        if(game->players[player_number].blocked){
+            break;
+        }
         
         sem_wait(&sync->C);
         sem_wait(&sync->E);

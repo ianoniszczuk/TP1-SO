@@ -14,6 +14,7 @@
 #include <sys/select.h>
 #include <getopt.h>
 
+
 // Estructura para cada jugador.
 typedef struct {
     char name[16];

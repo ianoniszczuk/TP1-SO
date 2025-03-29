@@ -110,7 +110,7 @@ int main(int argc, char * argv[]){
 
     while(wait(&status) > 0); //Espero a q terminen los hijos
 
-    //clean_resources(state, sizeof(GameState) + board_size, sync); 
+    clean_resources(state, sizeof(GameState) + board_size, sync); 
 
     printf("Juego terminado\n"); 
 
@@ -317,10 +317,10 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
                 unsigned char move;
                 int bytes = read(pipes[idx][0],&move,sizeof(move));
 
-                // if(bytes <= 0){
-                //     state->players[idx].blocked = true;
-                //     update = false;
-                // }
+                if(bytes <= 0){
+                    state->players[idx].blocked = true;
+                    update = false;
+                }
 
                 int new_x = state->players[idx].x + dx[move];
                 int new_y = state->players[idx].y + dy[move];
@@ -392,8 +392,17 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
     }
 }
 
-void clean_resoources(){
-
-
-    
+void clean_resources(GameState *state, size_t state_size, GameSync *sync) {
+    // Destruir semáforos
+    sem_destroy(&sync->A);
+    sem_destroy(&sync->B);
+    sem_destroy(&sync->C);
+    sem_destroy(&sync->D);
+    sem_destroy(&sync->E);
+    // Desmapear memorias compartidas
+    munmap(state, state_size);
+    munmap(sync, sizeof(GameSync));
+    // Eliminar objetos de memoria compartida
+    shm_unlink(GAME_STATE);
+    shm_unlink(GAME_SYNC);
 }
