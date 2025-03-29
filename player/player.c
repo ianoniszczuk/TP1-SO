@@ -2,6 +2,11 @@
 
 int main(void) {
 
+    int player_number;
+
+    int dx[8] = {0,1,1,1,0,-1,-1,-1};
+    int dy[8] = {-1,-1,0,1,1,1,0,-1};
+
     int fd_state = shm_open("/game_state", O_RDONLY, 0666);
     int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
     
@@ -36,8 +41,22 @@ int main(void) {
     }
     close(fd_sync);
 
+    for(int i =0;i<game->player_count;i++){
+        if(getpid() == game->players[i].pid){
+            player_number = i;
+            break;
+        }
+    }
+
     // Bucle principal del jugador: mientras no esté bloqueado, lee el estado y envía movimientos.
+
     while (!game->game_over) {
+
+        //Chequeo si estoy bloqueado
+
+        // if(game->players[player_number].blocked){
+        //     break;
+        // }
         
         sem_wait(&sync->C);
         sem_wait(&sync->E);
@@ -57,8 +76,6 @@ int main(void) {
 
         //TODO : Logica de player, mejorar dsp para competencia
         unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7
-
-        
 
         // Enviar el movimiento al máster a través del pipe (STDOUT se asume que está conectado al pipe del máster)
         if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
