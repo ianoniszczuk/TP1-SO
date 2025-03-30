@@ -106,13 +106,13 @@ int main(int argc, char * argv[]){
 
     create_players_and_view(view_path, player_paths ,num_players,pipes,state, arg_width, arg_height); //Crear los procesos de los players 
 
-     distribute_players(state);
+    distribute_players(state);
 
     handle_movements(state,sync,pipes, num_players,timeout_sec,delay_ms); //Bucle principal
 
     int status;
 
-    while(wait(&status) > 0); //Espero a q terminen los hijos
+    while(wait(&status) > 0); //Espero a que terminen los hijos
 
     clean_resources(state, sizeof(GameState) + board_size, sync); 
 
@@ -175,9 +175,12 @@ void init_sync_struct(GameSync **sync){
         exit(EXIT_FAILURE);
     }
 
+    // Semaforos para la sincronizacion de la view y el master
+
     sem_init(&((*sync)->A), 1, 0);
     sem_init(&((*sync)->B), 1, 0);
     // Semáforos para la sincronización máster/players (C, D y E) inician en 1.
+
     sem_init(&((*sync)->C), 1, 1);
     sem_init(&((*sync)->D), 1, 1);
     sem_init(&((*sync)->E), 1, 1);
@@ -195,8 +198,6 @@ void create_pipes(int pipes[][2], int num_players){
     }
 }
 
-//TODO : FALTAN CERRAR LOS PIPES
-
 void create_players_and_view(char *view_path, char *player_paths[],int num_players,int pipes[][2],GameState *state, char * arg_width, char* arg_height){
 
     pid_t pid;
@@ -211,6 +212,8 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
             exit(EXIT_FAILURE);
         }
         else if(pid == 0){
+
+            
             execve(view_path, args,NULL); //esto es sin argumentos, hay q crearlos
             perror("Error en execve");
             exit(EXIT_FAILURE);
@@ -224,6 +227,15 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
             exit(EXIT_FAILURE);
         }
         else if(pid == 0){
+
+            //Cierro todos los pipes en el hijo menos el suyo de escritura 
+
+            for(int j =0; j<num_players;j++){
+                close(pipes[j][0]);
+                if(i != j){
+                    close(pipes[j][1]);
+                }
+            }
 
             if(dup2(pipes[i][1], STDOUT_FILENO) == -1){
                 perror("Error en dup2");
