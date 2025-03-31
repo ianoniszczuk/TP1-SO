@@ -15,7 +15,7 @@ void print_board(GameState *game) {
     const unsigned int player_count = game->player_count;
 
     printf("Tablero (%hux %hu):\n", width, height);
-
+    
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             int toPrint = game->board[y*width + x];
@@ -75,9 +75,9 @@ int main(void) {
     //TODO : ver de sacar sleep(2)
     
     while (!game->game_over) {
-        sem_wait(&sync->A);  // Espera a que el máster indique que hay cambios
+        sem_wait(&sync->printNeeded);  // Espera a que el máster indique que hay cambios
         print_board(game);
-        sem_post(&sync->B);  // Indica al máster que terminó de imprimir
+        sem_post(&sync->printDone);  // Indica al máster que terminó de imprimir
     }
 
     //TODO: Chequera munmap 

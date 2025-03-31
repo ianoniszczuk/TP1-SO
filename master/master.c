@@ -177,8 +177,8 @@ void init_sync_struct(GameSync **sync){
 
     // Semaforos para la sincronizacion de la view y el master
 
-    sem_init(&((*sync)->A), 1, 0);
-    sem_init(&((*sync)->B), 1, 0);
+    sem_init(&((*sync)->printNeeded), 1, 0);
+    sem_init(&((*sync)->printDone), 1, 0);
     // Semáforos para la sincronización máster/players (C, D y E) inician en 1.
 
     sem_init(&((*sync)->C), 1, 1);
@@ -390,8 +390,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
 
                 current_player = (idx + 1) % num_players;
 
-                sem_post(&sync->A); //Indico a la vista q hay cambios
-                sem_wait(&sync->B); //Espero a q la vista termine de imprimir
+                sem_post(&sync->printNeeded); //Indico a la vista q hay cambios
+                sem_wait(&sync->printDone); //Espero a q la vista termine de imprimir
 
                 usleep(delay_ms * 1000);
 
@@ -405,7 +405,7 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
         
 
         if(state->game_over == true){
-            sem_post(&sync->A);
+            sem_post(&sync->printNeeded);
         }
 
     }
@@ -413,8 +413,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
 
 void clean_resources(GameState *state, size_t state_size, GameSync *sync) {
     // Destruir semáforos
-    sem_destroy(&sync->A);
-    sem_destroy(&sync->B);
+    sem_destroy(&sync->printNeeded);
+    sem_destroy(&sync->printDone);
     sem_destroy(&sync->C);
     sem_destroy(&sync->D);
     sem_destroy(&sync->E);

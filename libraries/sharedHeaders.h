@@ -27,8 +27,8 @@ typedef struct {
 
 // Estructura para la sincronización.
 typedef struct {
-    sem_t A; // Indica a la vista que hay cambios por imprimir
-    sem_t B; // Indica al máster que la vista terminó de imprimir
+    sem_t printNeeded; // Indica a la vista que hay cambios por imprimir
+    sem_t printDone; // Indica al máster que la vista terminó de imprimir
     sem_t C; // Mutex para evitar inanición del máster al acceder al estado
     sem_t D; // Mutex para el estado del juego (escritor)
     sem_t E; // Mutex para la variable F (lectores)
