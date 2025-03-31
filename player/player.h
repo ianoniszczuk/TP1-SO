@@ -9,6 +9,6 @@
 #include <stdbool.h>
 #include <semaphore.h>
 #include <time.h>
-#include "../libraries/shared.h"
+#include "../libraries/sharedHeaders.h"
 
 #endif

@@ -13,7 +13,7 @@
 #include <time.h>
 #include <sys/select.h>
 #include <getopt.h>
-#include "../libraries/shared.h"
+#include "../libraries/sharedHeaders.h"
 
 void init_shared_memory(GameState **state,size_t board_size,unsigned short width,unsigned short height,int num_players,unsigned int seed);
 
