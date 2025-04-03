@@ -12,6 +12,7 @@
         "stat.h": "c",
         "type_traits": "c",
         "types.h": "c",
-        "shared.h": "c"
+        "shared.h": "c",
+        "sharedheaders.h": "c"
     }
 }

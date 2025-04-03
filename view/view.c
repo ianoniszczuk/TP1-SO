@@ -6,27 +6,90 @@ int puntajes[9];
 
 bool flag = false;
 
-// Función que imprime el tablero.
+const char *colorMap[] = {
+    ANSI_COLOR_WHITE,
+    ANSI_BRIGHT_BLACK,
+    ANSI_COLOR_BLUE,
+    ANSI_COLOR_MAGENTA,
+    ANSI_COLOR_CYAN,
+    ANSI_COLOR_RED,
+    ANSI_COLOR_GREEN,
+    ANSI_COLOR_YELLOW,
+    ANSI_COLOR_BLACK
+};
 
-void print_board(GameState *game) {
+
+int isHead(GameState * game, int value, int x, int y){
+    return (x == game->players[-1*value].x && y == game->players[-1*value].y);
+}
+
+void printCellRow(int value, int py, int x, int y, GameState *game){
+    for (int px = 0; px < CELL_SIZE; px++){
+        if (value <= 0){
+            printf("%s", colorMap[-1*value]);
+            if (isHead(game, value, x, y)){
+                if ((px == 0) && (py == CELL_SIZE/2)){
+                    printf("█▓");
+                }
+                else if ((px == CELL_SIZE-1) && (py == CELL_SIZE/2)){
+                    printf("▓█");
+                }
+                else{
+                    printf("%s", game->players[-1*value].blocked ? "░░":"██");
+                }
+            }
+            else {
+                printf("██");
+            }
+        }
+        else {
+            if ((px == CELL_SIZE/2) && (py == px)){
+                printf("%s%s %d", ANSI_BG_BLACK, ANSI_COLOR_BLACK, value);
+            }
+            else {
+                printf("%s%s  ", ANSI_BG_BLACK, ANSI_COLOR_BLACK);
+            }
+        }
+        printf(ANSI_COLOR_RESET);
+    }
+}
+
+void printBoard(GameState *game) {
 
     const unsigned short width = game->width;
     const unsigned short height = game->height;
     const unsigned int player_count = game->player_count;
 
-    printf("Tablero (%hux %hu):\n", width, height);
+    printf("%s", ANSI_CLEAR_SCREEN);
+    printf("%s", ANSI_CURSOR_HOME);
     
     for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            int toPrint = game->board[y*width + x];
-            printf("%s%d ", (toPrint < 0 ? "" : " "), toPrint);
+        for (int py = 0; py < CELL_SIZE; py++){
+            printf(MARGIN_TAB);
+            for (int x = 0; x < width; x++) {
+                int toPrint = game->board[y*width + x];
+                printCellRow(toPrint, py, x, y, game);
+            }
+            printf("\n");
         }
-        printf("\n");
     }
     printf("\n");
 
     for(int i = 0; i < player_count; i++) {
-        printf("Jugador  %d, posicion actual : (%d;%d), puntaje : %d, movs invalidos : %d, bloqueado? %d: \n", i, game->players[i].x, game->players[i].y, game->players[i].points,game->players[i].invalid_movements, game->players[i].blocked);
+        printf(ANSI_BOLD_WHITE);
+        printf(MARGIN_TAB);
+        printf("Player %s%d%s score: %d", colorMap[i], i, ANSI_BOLD_WHITE, game->players[i].points);
+        printf(ANSI_COLOR_RESET);
+        printf(" - ");
+        printf("%d Invalid movements", game->players[i].invalid_movements);
+        printf(ANSI_COLOR_RESET);
+        if (game->players[i].blocked){
+            printf(ANSI_COLOR_RED);
+            printf(" - ");
+            printf("Blocked!");
+            printf(ANSI_COLOR_RESET);
+        }
+        printf("\n");
     }
     printf("\n");
 }
@@ -76,7 +139,7 @@ int main(void) {
     
     while (!game->game_over) {
         sem_wait(&sync->printNeeded);  // Espera a que el máster indique que hay cambios
-        print_board(game);
+        printBoard(game);
         sem_post(&sync->printDone);  // Indica al máster que terminó de imprimir
     }
 
