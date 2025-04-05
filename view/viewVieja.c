@@ -1,12 +1,39 @@
-#include "player.h"
+#include "view.h"
+
+//Definiciones
+
+bool flag = false;
+
+// Función que imprime el tablero.
+
+void printBoard(GameState *game) {
+
+    const unsigned short width = game->width;
+    const unsigned short height = game->height;
+    const unsigned int player_count = game->player_count;
+
+    printf("Tablero (%hu x %hu):\n", width, height);
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int toPrint = game->board[y*width + x];
+            printf("%s%d ", (toPrint < 0 ? "" : " "), toPrint);
+        }
+        printf("\n");
+    }
+    printf("\n");
+
+    for(int i = 0; i < player_count; i++) {
+        printf("Jugador  %d, posicion actual : (%d;%d), puntaje : %d, movs invalidos : %d, bloqueado? %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points,game->players[i].invalid_movements,game->players[i].blocked);
+    }
+    printf("\n");
+
+}
 
 int main(void) {
-
-    int player_number = -1;
-
+    
     int fd_state = shm_open("/game_state", O_RDONLY, 0666);
     int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
-    
     if (fd_state == -1 || fd_sync == -1) {
         perror("Error abriendo la memoria compartida");
         exit(EXIT_FAILURE);
@@ -37,53 +64,16 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
     close(fd_sync);
+    // Bucle principal: espera la señal del máster para imprimir y notifica cuando termina.
 
-    for(int i =0;i<game->player_count;i++){
-        if(getpid() == game->players[i].pid){
-            player_number = i;
-            break;
-        }
-    }
-
-    // Bucle principal del jugador: mientras no esté bloqueado, lee el estado y envía movimientos.
 
     while (!game->game_over) {
-
-        //Chequeo si estoy bloqueado
-
-        if(game->players[player_number].blocked){
-            break;
-        }
-        
-        sem_wait(&sync->C);
-        sem_wait(&sync->E);
-        sync->F++;
-        if(sync->F == 1){
-            sem_wait(&sync->D);
-        }
-        sem_post(&sync->E);
-        sem_post(&sync->C);
-
-        sem_wait(&sync->E);
-        sync->F--;
-        if(sync->F == 0){
-            sem_post(&sync->D);
-        }
-        sem_post(&sync->E);
-
-        //TODO : Logica de player, mejorar dsp para competencia
-        unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7
-
-        // Enviar el movimiento al máster a través del pipe (STDOUT se asume que está conectado al pipe del máster)
-        if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
-            perror("Error escribiendo movimiento");
-            break;
-        }
-
-        sleep(1);  // Retardo de 1 segundo para simular tiempo de decisión, admeas lo indico el profe
+        sem_wait(&sync->printNeeded);  // Espera a que el máster indique que hay cambios
+        printBoard(game);
+        sem_post(&sync->printDone);  // Indica al máster que terminó de imprimir
     }
 
     munmap(game, total_size);
     munmap(sync, sizeof(GameSync));
-    return EXIT_SUCCESS;
+    return 0;
 }

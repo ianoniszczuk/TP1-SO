@@ -5,6 +5,8 @@
 #define GAME_STATE "/game_state"
 #define GAME_SYNC "/game_sync"
 
+int processReturn[9];
+
 int main(int argc, char * argv[]){
 
     unsigned short width = 10;   // Valor por defecto y mínimo: 10
@@ -112,14 +114,31 @@ int main(int argc, char * argv[]){
 
     int status;
 
-    while(wait(&status) > 0); //Espero a que terminen los hijos
+    //while(wait(&status) > 0);
+
+    for(int i = 0;i<num_players;i++){
+        pid_t pid = waitpid(state->players[i].pid, &status, 0);
+        
+        if(pid > 0){
+            if(WIFEXITED(status)){
+                processReturn[i] = WEXITSTATUS(status);
+            }
+        }
+        else processReturn[i] = -1;            
+    } //Espero a que terminen los hijos
+
+    printFinalResults(state);
 
     clean_resources(state, sizeof(GameState) + board_size, sync); 
 
-    printf("Juego terminado\n"); 
-
     return 0;
 }    
+
+void printFinalResults(GameState *state){
+    for(int i = 0;i<state->player_count;i++){
+        printf("Jugador %d (%d), puntos: %d, movimientos invalidos: %d\n",i,processReturn[i],state->players[i].points,state->players[i].invalid_movements);
+    }
+}
 
 void init_shared_memory(GameState **state, size_t board_size, unsigned short width, unsigned short height, int num_players, unsigned int seed){
 
@@ -246,15 +265,9 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
             perror("Error en execve");
             exit(EXIT_FAILURE);
         } else {
-            //Proceso padre, lleno los pids
 
-            // Cerrar el extremo de escritura del pipe en el padre, ya que solo leerá del pipe.
             close(pipes[i][1]);
-
             state->players[i].pid = pid;
-
-
-            sleep(2);
         }
     }
     
@@ -269,7 +282,6 @@ void distribute_players(GameState *state){
         state->players[i].invalid_movements =0;
         state->players[i].valid_movements =0;
         state->players[i].blocked =false;
-        state->players[i].pid=0;;
         state->board[state->players[i].y * state->width+ state->players[i].x] = -i;
     }    
 
@@ -287,11 +299,27 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
     int dy[8] = {-1,-1,0,1,1,1,0,-1};
 
     while(!state->game_over){
+        bool blocked_flag = true;        
 
-        bool blocked_flag = true;
+        if(difftime(time(NULL),last_valid_time) > timeout){
 
-         //Chequeo si estoy bloquea
-         
+            sem_wait(&sync->C);
+            sem_wait(&sync->D);
+            
+            state->game_over = true;
+
+            sem_post(&sync->printNeeded);
+            sem_wait(&sync->printDone);
+
+            printf("Timeout\n");
+
+            sem_post(&sync->D);
+            sem_post(&sync->C);
+            
+           
+            
+            break;
+        }
 
         FD_ZERO(&rfds);
 
@@ -313,17 +341,11 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
         }
 
         if(activity == 0){
-             if(activity == 0){
-            if(difftime(time(NULL),last_valid_time) > timeout){
-                printf("Timeout\n");
-                state->game_over = true;
-                break;
-            }
             continue;
         }
-        }
+        
 
-        for(int i = 0;i<num_players;i++){
+        for(int i = 0;i<num_players;i++){ 
             int idx = (current_player + i) % num_players;
             
             if(FD_ISSET(pipes[idx][0],&rfds)){
@@ -365,6 +387,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
 
                 for(int k =0;k<num_players;k++){
 
+                    blocked_flag = true;
+
                     for(int j = 0; j<8;j++){
 
                     int to_check_x =  state->players[k].x+ dx[j];
@@ -374,7 +398,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
                             blocked_flag = false;
                         }
                     }
-                        state->players[k].blocked = blocked_flag;
+
+                    state->players[k].blocked = blocked_flag;
                 }
 
                 state->game_over = true;
@@ -400,15 +425,13 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
 
         }
 
-        //Chequeo si estan todos bloqueados para cortar
-        
-        
-
         if(state->game_over == true){
             sem_post(&sync->printNeeded);
         }
 
     }
+
+
 }
 
 void clean_resources(GameState *state, size_t state_size, GameSync *sync) {
