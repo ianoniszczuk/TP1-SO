@@ -9,7 +9,7 @@ LIB_DIR = libraries
 # Source files
 MASTER_SRC = master/master.c
 PLAYER_SRC = player/player.c
-VIEW_SRC = view/viewVieja.c
+VIEW_SRC = view/view.c
 SHARED_MEMORY_SRC = $(LIB_DIR)/sharedMemory.c
 
 # Object files

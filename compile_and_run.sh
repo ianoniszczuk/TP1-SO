@@ -1,5 +1,3 @@
-gcc -Wall -pedantic ./view/view.c -o executables/view
-gcc -Wall -pedantic ./player/player.c -o executables/player
-gcc -Wall -pedantic ./master/master.c -o executables/master
+make clean && make
 
-./executables/master.o -p ./executables/player ./executables/player ./executables/player ./executables/player -v ./executables/view
+./executables/master -d 400 -t 20 -p ./executables/player ./executables/player ./executables/player ./executables/player ./executables/player -v ./executables/viewVieja

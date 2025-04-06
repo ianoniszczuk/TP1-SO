@@ -1,7 +1,5 @@
 #include "master.h"
 
-#define MAX_PLAYERS 9
-
 #define GAME_STATE "/game_state"
 #define GAME_SYNC "/game_sync"
 
@@ -91,6 +89,20 @@ int main(int argc, char * argv[]){
         seed = (unsigned int)time(NULL);
     }
 
+    // Struct para contener las opciones.
+    Options options = {
+        .width = width,
+        .height = height,
+        .delay_ms = delay_ms,
+        .timeout_sec = timeout_sec,
+        .seed = seed,
+        .view_path = view_path,
+        .num_players = num_players,
+    };
+    for (int i = 0; i < num_players; i++) {
+        options.player_paths[i] = player_paths[i];
+    }
+
     // Inicializar la memoria compartida para el estado del juego.
 
     GameState *state;
@@ -98,7 +110,7 @@ int main(int argc, char * argv[]){
 
     size_t board_size = width * height * sizeof(int);
 
-    init_shared_memory(&state, board_size, width, height, num_players, seed);
+    init_shared_memory(&state, board_size, &options);
 
     init_sync_struct(&sync);
 
@@ -110,11 +122,15 @@ int main(int argc, char * argv[]){
 
     distribute_players(state);
 
+    print_options(&options);
+    sleep(1);
+
     handle_movements(state,sync,pipes, num_players,timeout_sec,delay_ms); //Bucle principal
 
     int status;
 
     //while(wait(&status) > 0);
+
 
     for(int i = 0;i<num_players;i++){
         pid_t pid = waitpid(state->players[i].pid, &status, 0);
@@ -134,13 +150,26 @@ int main(int argc, char * argv[]){
     return 0;
 }    
 
+void print_options(Options * options){
+    printf("width: %d\n", options->width);
+    printf("height: %d\n", options->height);
+    printf("delay: %d\n", options->delay_ms);
+    printf("timeout: %d\n", options->timeout_sec);
+    printf("seed: %d\n", options->seed);
+    printf("view: %s\n", options->view_path);
+    printf("num_players: %d\n", options->num_players);
+    for (int i = 0; i < options->num_players; i++){
+        printf("\t%s\n", options->player_paths[i]);
+    }
+}
+
 void printFinalResults(GameState *state){
     for(unsigned int i = 0; i < state->player_count; i++) {
         printf("Jugador %d (%d), puntos: %d, movimientos invalidos: %d\n", i, processReturn[i], state->players[i].points, state->players[i].invalid_movements);
     }
 }
 
-void init_shared_memory(GameState **state, size_t board_size, unsigned short width, unsigned short height, int num_players, unsigned int seed){
+void init_shared_memory(GameState **state, size_t board_size, Options * options){
 
     int fd = shm_open(GAME_STATE, O_RDWR | O_CREAT, 0666);
     if(fd==-1){
@@ -162,14 +191,14 @@ void init_shared_memory(GameState **state, size_t board_size, unsigned short wid
         exit(EXIT_FAILURE);
     }
     
-    (*state)->width = width;
-    (*state)->height = height;
-    (*state)->player_count = num_players;
+    (*state)->width = options->width;
+    (*state)->height = options->height;
+    (*state)->player_count = options->num_players;;
     (*state)->game_over = false;
 
-    srand(seed);
+    srand(options->seed);
 
-    for(int i = 0;i<width * height;i++){
+    for(int i = 0;i<options->width * options->height;i++){
         (*state)->board[i] = (rand() % 9) + 1;
     }
 
