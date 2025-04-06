@@ -55,21 +55,21 @@ int main(void) {
             break;
         }
         
-        sem_wait(&sync->C);
-        sem_wait(&sync->E);
-        sync->F++;
-        if(sync->F == 1){
-            sem_wait(&sync->D);
+        sem_wait(&sync->turnstile);
+        sem_wait(&sync->readerCountMutex);
+        sync->readerCount++;
+        if(sync->readerCount == 1){
+            sem_wait(&sync->resourceAccess);
         }
-        sem_post(&sync->E);
-        sem_post(&sync->C);
+        sem_post(&sync->readerCountMutex);
+        sem_post(&sync->turnstile);
 
-        sem_wait(&sync->E);
-        sync->F--;
-        if(sync->F == 0){
-            sem_post(&sync->D);
+        sem_wait(&sync->readerCountMutex);
+        sync->readerCount--;
+        if(sync->readerCount == 0){
+            sem_post(&sync->resourceAccess);
         }
-        sem_post(&sync->E);
+        sem_post(&sync->readerCountMutex);
 
         //TODO : Logica de player, mejorar dsp para competencia
         unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7

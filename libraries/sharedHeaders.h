@@ -29,10 +29,10 @@ typedef struct {
 typedef struct {
     sem_t printNeeded; // Indica a la vista que hay cambios por imprimir
     sem_t printDone; // Indica al máster que la vista terminó de imprimir
-    sem_t C; // Mutex para evitar inanición del máster al acceder al estado
-    sem_t D; // Mutex para el estado del juego (escritor)
-    sem_t E; // Mutex para la variable F (lectores)
-    unsigned int F; // Cantidad de jugadores leyendo el estado
+    sem_t turnstile; // Mutex para evitar inanición del máster al acceder al estado
+    sem_t resourceAccess; // Mutex para el estado del juego (escritor)
+    sem_t readerCountMutex; // Mutex para la variable readerCount (lectores)
+    unsigned int readerCount; // Cantidad de jugadores leyendo el estado
 } GameSync;
 
 #endif

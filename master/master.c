@@ -200,10 +200,10 @@ void init_sync_struct(GameSync **sync){
     sem_init(&((*sync)->printDone), 1, 0);
     // Semáforos para la sincronización máster/players (C, D y E) inician en 1.
 
-    sem_init(&((*sync)->C), 1, 1);
-    sem_init(&((*sync)->D), 1, 1);
-    sem_init(&((*sync)->E), 1, 1);
-    (*sync)->F = 0;
+    sem_init(&((*sync)->turnstile), 1, 1);
+    sem_init(&((*sync)->resourceAccess), 1, 1);
+    sem_init(&((*sync)->readerCountMutex), 1, 1);
+    (*sync)->readerCount = 0;
     close(fd);
 
 }
@@ -303,8 +303,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
 
         if(difftime(time(NULL),last_valid_time) > timeout){
 
-            sem_wait(&sync->C);
-            sem_wait(&sync->D);
+            sem_wait(&sync->turnstile);
+            sem_wait(&sync->resourceAccess);
             
             state->game_over = true;
 
@@ -313,8 +313,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
 
             printf("Timeout\n");
 
-            sem_post(&sync->D);
-            sem_post(&sync->C);
+            sem_post(&sync->resourceAccess);
+            sem_post(&sync->turnstile);
             
            
             
@@ -350,8 +350,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
             
             if(FD_ISSET(pipes[idx][0],&rfds)){
 
-                sem_wait(&sync->C);
-                sem_wait(&sync->D);
+                sem_wait(&sync->turnstile);
+                sem_wait(&sync->resourceAccess);
 
                 int update = true;
 
@@ -410,8 +410,8 @@ void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_pl
                     }
                 }
             
-                sem_post(&sync->D);
-                sem_post(&sync->C);
+                sem_post(&sync->resourceAccess);
+                sem_post(&sync->turnstile);
 
                 current_player = (idx + 1) % num_players;
 
@@ -438,9 +438,9 @@ void clean_resources(GameState *state, size_t state_size, GameSync *sync) {
     // Destruir semáforos
     sem_destroy(&sync->printNeeded);
     sem_destroy(&sync->printDone);
-    sem_destroy(&sync->C);
-    sem_destroy(&sync->D);
-    sem_destroy(&sync->E);
+    sem_destroy(&sync->turnstile);
+    sem_destroy(&sync->resourceAccess);
+    sem_destroy(&sync->readerCountMutex);
     // Desmapear memorias compartidas
     munmap(state, state_size);
     munmap(sync, sizeof(GameSync));
