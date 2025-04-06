@@ -30,7 +30,7 @@ void cleanupPlayer(GameState *game, GameSync *sync, int fdState, int fdSync) {
 }
 
 int findPlayerNumber(GameState *game) {
-    for(int i = 0; i < game->player_count; i++) {
+    for(unsigned int i = 0; i < game->player_count; i++) {
         if(getpid() == game->players[i].pid) {
             return i;
         }

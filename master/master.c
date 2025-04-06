@@ -135,8 +135,8 @@ int main(int argc, char * argv[]){
 }    
 
 void printFinalResults(GameState *state){
-    for(int i = 0;i<state->player_count;i++){
-        printf("Jugador %d (%d), puntos: %d, movimientos invalidos: %d\n",i,processReturn[i],state->players[i].points,state->players[i].invalid_movements);
+    for(unsigned int i = 0; i < state->player_count; i++) {
+        printf("Jugador %d (%d), puntos: %d, movimientos invalidos: %d\n", i, processReturn[i], state->players[i].points, state->players[i].invalid_movements);
     }
 }
 
@@ -274,17 +274,15 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
 }
 
 void distribute_players(GameState *state){
-
-    for(int i = 0;i<state->player_count;i++){
+    for(unsigned int i = 0; i < state->player_count; i++) {
         state->players[i].x = i;
         state->players[i].y = 0;
         state->players[i].points = 0;
-        state->players[i].invalid_movements =0;
-        state->players[i].valid_movements =0;
-        state->players[i].blocked =false;
-        state->board[state->players[i].y * state->width+ state->players[i].x] = -i;
-    }    
-
+        state->players[i].invalid_movements = 0;
+        state->players[i].valid_movements = 0;
+        state->players[i].blocked = false;
+        state->board[state->players[i].y * state->width + state->players[i].x] = -i;
+    }
 }
 
 void handle_movements(GameState *state,GameSync *sync,int pipes[][2], int num_players, int timeout, int delay_ms){ 

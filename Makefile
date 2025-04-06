@@ -1,15 +1,15 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -I./libraries
+CFLAGS = -Wall -pedantic -I./libraries
 LDFLAGS = -pthread -lrt
 
 SRC_DIR = .
-BIN_DIR = bin
+EXEC_DIR = executables
 LIB_DIR = libraries
 
 # Source files
 MASTER_SRC = master/master.c
 PLAYER_SRC = player/player.c
-VIEW_SRC = view/view.c
+VIEW_SRC = view/viewVieja.c
 SHARED_MEMORY_SRC = $(LIB_DIR)/sharedMemory.c
 
 # Object files
@@ -19,29 +19,29 @@ VIEW_OBJ = $(VIEW_SRC:.c=.o)
 SHARED_MEMORY_OBJ = $(SHARED_MEMORY_SRC:.c=.o)
 
 # Binary files
-MASTER_BIN = $(BIN_DIR)/master
-PLAYER_BIN = $(BIN_DIR)/player
-VIEW_BIN = $(BIN_DIR)/view
+MASTER_BIN = $(EXEC_DIR)/master
+PLAYER_BIN = $(EXEC_DIR)/player
+VIEW_BIN = $(EXEC_DIR)/viewVieja
 
 all: $(MASTER_BIN) $(PLAYER_BIN) $(VIEW_BIN)
 
-$(BIN_DIR)/master: $(MASTER_OBJ) $(SHARED_MEMORY_OBJ)
-	@mkdir -p $(BIN_DIR)
+$(EXEC_DIR)/master: $(MASTER_OBJ) $(SHARED_MEMORY_OBJ)
+	@mkdir -p $(EXEC_DIR)
 	$(CC) $(MASTER_OBJ) $(SHARED_MEMORY_OBJ) -o $@ $(LDFLAGS)
 
-$(BIN_DIR)/player: $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ)
-	@mkdir -p $(BIN_DIR)
+$(EXEC_DIR)/player: $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ)
+	@mkdir -p $(EXEC_DIR)
 	$(CC) $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ) -o $@ $(LDFLAGS)
 
-$(BIN_DIR)/view: $(VIEW_OBJ) $(SHARED_MEMORY_OBJ)
-	@mkdir -p $(BIN_DIR)
+$(EXEC_DIR)/viewVieja: $(VIEW_OBJ) $(SHARED_MEMORY_OBJ)
+	@mkdir -p $(EXEC_DIR)
 	$(CC) $(VIEW_OBJ) $(SHARED_MEMORY_OBJ) -o $@ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(BIN_DIR)
+	rm -rf $(EXEC_DIR)
 	rm -f $(MASTER_OBJ) $(PLAYER_OBJ) $(VIEW_OBJ) $(SHARED_MEMORY_OBJ)
 
 .PHONY: all clean 

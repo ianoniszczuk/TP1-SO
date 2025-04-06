@@ -55,7 +55,6 @@ void printCellRow(int value, int py, int x, int y, GameState *game){
 }
 
 void printBoard(GameState *game) {
-
     const unsigned short width = game->width;
     const unsigned short height = game->height;
     const unsigned int player_count = game->player_count;
@@ -75,7 +74,7 @@ void printBoard(GameState *game) {
     }
     printf("\n");
 
-    for(int i = 0; i < player_count; i++) {
+    for(unsigned int i = 0; i < player_count; i++) {
         printf(ANSI_BOLD_WHITE);
         printf(MARGIN_TAB);
         printf("Player %s%d%s score: %d", colorMap[i], i, ANSI_BOLD_WHITE, game->players[i].points);
