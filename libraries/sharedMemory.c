@@ -21,25 +21,24 @@ void *mapSharedMemory(const char *name, size_t size, int *fd, int create_flag) {
     void *shmBasePtr = mmap(NULL, size, PROT_WRITE | PROT_READ, MAP_SHARED, *fd, 0);
     if(shmBasePtr == MAP_FAILED) {
         if(create_flag) {
-            destroySharedMemory(name, shmBasePtr, *fd,size);
-            shm_unlink(name);
+            destroySharedMemory(name, shmBasePtr, *fd, size);
         } else {
-            closeSharedMemory(NULL,*fd, size);
+            closeSharedMemory(NULL, *fd, size);
         }
         ERROR_EXIT("mmap");
     }
     return shmBasePtr;
 }
 
-void *createSharedMemory(char *name, size_t size, int *fd) {
+void *createSharedMemory(const char *name, size_t size, int *fd) {
     return mapSharedMemory(name, size, fd, 1);
 }
 
-void *openSharedMemory(char *name, size_t size, int *fd) {
+void *openSharedMemory(const char *name, size_t size, int *fd) {
     return mapSharedMemory(name, size, fd, 0);
 }
 
-void closeSharedMemory(void *shmPtr, size_t size, int fd) {
+void closeSharedMemory(void *shmPtr, int fd, size_t size) {
     if(shmPtr != NULL && shmPtr != MAP_FAILED) {
         munmap(shmPtr, size);
     }
@@ -48,7 +47,9 @@ void closeSharedMemory(void *shmPtr, size_t size, int fd) {
     }
 }
 
-void destroySharedMemory(char *name, void *shmPtr, size_t size, int fd) {
-    closeSharedMemory(shmPtr, size, fd);
-    shm_unlink(fd);
+void destroySharedMemory(const char *name, void *shmPtr, int fd, size_t size) {
+    closeSharedMemory(shmPtr, fd, size);
+    if(name != NULL) {
+        shm_unlink(name);
+    }
 }

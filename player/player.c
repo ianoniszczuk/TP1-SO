@@ -1,89 +1,98 @@
 #include "player.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+
+#define GAME_STATE "/game_state"
+#define GAME_SYNC "/game_sync"
+
+void initializePlayer(GameState **game, GameSync **sync, int *fdState, int *fdSync) {
+    // Open shared memory for game state
+    *game = openSharedMemory(GAME_STATE, sizeof(GameState), fdState);
+    
+    // Get dimensions and remap with full size
+    unsigned short width = (*game)->width, height = (*game)->height;
+    size_t totalSize = sizeof(GameState) + width * height * sizeof(int);
+    closeSharedMemory(*game, *fdState, sizeof(GameState));
+
+    // Remap with full size
+    *game = openSharedMemory(GAME_STATE, totalSize, fdState);
+    
+    // Open shared memory for game sync
+    *sync = openSharedMemory(GAME_SYNC, sizeof(GameSync), fdSync);
+}
+
+void cleanupPlayer(GameState *game, GameSync *sync, int fdState, int fdSync) {
+    size_t totalSize = sizeof(GameState) + game->width * game->height * sizeof(int);
+    closeSharedMemory(game, fdState, totalSize);
+    closeSharedMemory(sync, fdSync, sizeof(GameSync));
+}
+
+int findPlayerNumber(GameState *game) {
+    for(int i = 0; i < game->player_count; i++) {
+        if(getpid() == game->players[i].pid) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void handlePlayerTurn(GameState *game, GameSync *sync, int player_number) {
+    // Check if player is blocked
+    if(game->players[player_number].blocked) {
+        return;
+    }
+
+    // Reader-writer synchronization
+    sem_wait(&sync->turnstile);
+    sem_wait(&sync->readerCountMutex);
+    sync->readerCount++;
+    if(sync->readerCount == 1) {
+        sem_wait(&sync->resourceAccess);
+    }
+    sem_post(&sync->readerCountMutex);
+    sem_post(&sync->turnstile);
+
+    // Generate and send movement
+    unsigned char movimiento = rand() % 8;
+    if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
+        ERROR_EXIT("Error writing movement");
+    }
+
+    // Release reader-writer lock
+    sem_wait(&sync->readerCountMutex);
+    sync->readerCount--;
+    if(sync->readerCount == 0) {
+        sem_post(&sync->resourceAccess);
+    }
+    sem_post(&sync->readerCountMutex);
+}
 
 int main(void) {
+    GameState *game = NULL;
+    GameSync *sync = NULL;
+    int fdState, fdSync;
+    int playerNumber;
 
-    int player_number = -1;
+    // Initialize random seed
+    srand(time(NULL));
 
-    int fd_state = shm_open("/game_state", O_RDONLY, 0666);
-    int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
-    
-    if (fd_state == -1 || fd_sync == -1) {
-        perror("Error abriendo la memoria compartida");
-        exit(EXIT_FAILURE);
+    // Initialize shared memory and find player number
+    initializePlayer(&game, &sync, &fdState, &fdSync);
+    playerNumber = findPlayerNumber(game);
+    if (playerNumber == -1) {
+        cleanupPlayer(game, sync, fdState, fdSync);
+        ERROR_EXIT("Player not found in game state");
     }
 
-    // Mapeo inicial para obtener dimensiones.
-    GameState *game = mmap(NULL, sizeof(GameState), PROT_READ, MAP_SHARED, fd_state, 0);
-    if (game == MAP_FAILED) {
-        perror("Error mapeando game_state");
-        exit(EXIT_FAILURE);
-    }
-    unsigned short width = game->width, height = game->height;
-    size_t total_size = sizeof(GameState) + width * height * sizeof(int);
-    munmap(game, sizeof(GameState));  // Liberamos el mapeo inicial
-
-    // Mapeamos el estado completo (estructura + tablero).
-    game = mmap(NULL, total_size, PROT_READ, MAP_SHARED, fd_state, 0);
-    if (game == MAP_FAILED) {
-        perror("Error mapeando estado completo");
-        exit(EXIT_FAILURE);
-    }
-    close(fd_state);
-
-    // Mapeamos la memoria compartida para la sincronización.
-    GameSync *sync = mmap(NULL, sizeof(GameSync), PROT_READ | PROT_WRITE, MAP_SHARED, fd_sync, 0);
-    if (sync == MAP_FAILED) {
-        perror("Error mapeando game_sync");
-        exit(EXIT_FAILURE);
-    }
-    close(fd_sync);
-
-    for(int i =0;i<game->player_count;i++){
-        if(getpid() == game->players[i].pid){
-            player_number = i;
-            break;
-        }
-    }
-
-    // Bucle principal del jugador: mientras no esté bloqueado, lee el estado y envía movimientos.
-
+    // Main game loop
     while (!game->game_over) {
-
-        //Chequeo si estoy bloqueado
-
-        if(game->players[player_number].blocked){
-            break;
-        }
-        
-        sem_wait(&sync->turnstile);
-        sem_wait(&sync->readerCountMutex);
-        sync->readerCount++;
-        if(sync->readerCount == 1){
-            sem_wait(&sync->resourceAccess);
-        }
-        sem_post(&sync->readerCountMutex);
-        sem_post(&sync->turnstile);
-
-        sem_wait(&sync->readerCountMutex);
-        sync->readerCount--;
-        if(sync->readerCount == 0){
-            sem_post(&sync->resourceAccess);
-        }
-        sem_post(&sync->readerCountMutex);
-
-        //TODO : Logica de player, mejorar dsp para competencia
-        unsigned char movimiento = rand() % 8;  // Movimiento aleatorio entre 0 y 7
-
-        // Enviar el movimiento al máster a través del pipe (STDOUT se asume que está conectado al pipe del máster)
-        if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
-            perror("Error escribiendo movimiento");
-            break;
-        }
-
-        sleep(1);  // Retardo de 1 segundo para simular tiempo de decisión, admeas lo indico el profe
+        handlePlayerTurn(game, sync, playerNumber);
+        sleep(1);  // Delay between turns
     }
 
-    munmap(game, total_size);
-    munmap(sync, sizeof(GameSync));
+    // Cleanup
+    cleanupPlayer(game, sync, fdState, fdSync);
     return EXIT_SUCCESS;
 }
