@@ -21,7 +21,7 @@ SHARED_MEMORY_OBJ = $(SHARED_MEMORY_SRC:.c=.o)
 # Binary files
 MASTER_BIN = $(EXEC_DIR)/master
 PLAYER_BIN = $(EXEC_DIR)/player
-VIEW_BIN = $(EXEC_DIR)/viewVieja
+VIEW_BIN = $(EXEC_DIR)/view
 
 all: $(MASTER_BIN) $(PLAYER_BIN) $(VIEW_BIN)
 
@@ -33,7 +33,7 @@ $(EXEC_DIR)/player: $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ)
 	@mkdir -p $(EXEC_DIR)
 	$(CC) $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ) -o $@ $(LDFLAGS)
 
-$(EXEC_DIR)/viewVieja: $(VIEW_OBJ) $(SHARED_MEMORY_OBJ)
+$(EXEC_DIR)/view: $(VIEW_OBJ) $(SHARED_MEMORY_OBJ)
 	@mkdir -p $(EXEC_DIR)
 	$(CC) $(VIEW_OBJ) $(SHARED_MEMORY_OBJ) -o $@ $(LDFLAGS)
 
@@ -44,4 +44,16 @@ clean:
 	rm -rf $(EXEC_DIR)
 	rm -f $(MASTER_OBJ) $(PLAYER_OBJ) $(VIEW_OBJ) $(SHARED_MEMORY_OBJ)
 
-.PHONY: all clean 
+format:
+	clang-format -style=file --sort-includes --Werror -i $(SRC_DIR)/*.c $(SRC_DIR)/include/*.h
+
+tidy:
+	clang-tidy $(MASTER_SRC) $(PLAYER_SRC) $(VIEW_SRC) $(SHARED_MEMORY_SRC) -- -I./libraries
+
+check:
+	cppcheck --quiet --enable=all --force --inconclusive .
+	pvs-studio-analyzer trace -- make
+	pvs-studio-analyzer analyze
+	plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+
+.PHONY: all clean format tidy check 
