@@ -6,8 +6,9 @@
 #include <unistd.h>
 
 // Function declarations
-void *createSharedMemory(const char *name, size_t size, int *fd);
-void *openSharedMemory(const char *name, size_t size, int *fd);
+void *mapSharedMemory(const char *name, size_t size, int *fd, int mode, int flags);
+void *createSharedMemory(const char *name, size_t size, int *fd, int mode);
+void *openSharedMemory(const char *name, size_t size, int *fd, int flags);
 void closeSharedMemory(void *shmPtr, int fd, size_t size);
 void destroySharedMemory(const char *name, void *shmPtr, int fd, size_t size);
 

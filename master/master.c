@@ -202,6 +202,11 @@ void init_shared_memory(GameState **state, size_t board_size, Options * options)
         (*state)->board[i] = (rand() % 9) + 1;
     }
 
+    if (fchmod(fd, 0444) == -1) {
+        perror("fchmod");
+        exit(EXIT_FAILURE);
+    }    
+
     close(fd);   
 }
 

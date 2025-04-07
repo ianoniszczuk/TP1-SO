@@ -9,7 +9,7 @@
 
 void initializePlayer(GameState **game, GameSync **sync, int *fdState, int *fdSync) {
     // Open shared memory for game state
-    *game = openSharedMemory(GAME_STATE, sizeof(GameState), fdState);
+    *game = openSharedMemory(GAME_STATE, sizeof(GameState), fdState, O_RDONLY);
     
     // Get dimensions and remap with full size
     unsigned short width = (*game)->width, height = (*game)->height;
@@ -17,10 +17,10 @@ void initializePlayer(GameState **game, GameSync **sync, int *fdState, int *fdSy
     closeSharedMemory(*game, *fdState, sizeof(GameState));
 
     // Remap with full size
-    *game = openSharedMemory(GAME_STATE, totalSize, fdState);
+    *game = openSharedMemory(GAME_STATE, totalSize, fdState, O_RDONLY);
     
     // Open shared memory for game sync
-    *sync = openSharedMemory(GAME_SYNC, sizeof(GameSync), fdSync);
+    *sync = openSharedMemory(GAME_SYNC, sizeof(GameSync), fdSync, O_RDWR);
 }
 
 void cleanupPlayer(GameState *game, GameSync *sync, int fdState, int fdSync) {

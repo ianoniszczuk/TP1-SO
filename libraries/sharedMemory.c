@@ -3,10 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void *mapSharedMemory(const char *name, size_t size, int *fd, int create_flag) {
-    int flags = O_RDWR | (create_flag ? O_CREAT : 0);
+void *mapSharedMemory(const char *name, size_t size, int *fd, int mode, int flags) {
+    int create_flag = (flags | O_CREAT) == flags;
+    int write_flag = (flags | O_RDWR) == flags;
     
-    *fd = shm_open(name, flags, 0666);
+    *fd = shm_open(name, flags, mode);
     if(*fd == -1) {
         ERROR_EXIT("shm_open");
     }
@@ -18,7 +19,7 @@ void *mapSharedMemory(const char *name, size_t size, int *fd, int create_flag) {
         }
     }
 
-    void *shmBasePtr = mmap(NULL, size, PROT_WRITE | PROT_READ, MAP_SHARED, *fd, 0);
+    void *shmBasePtr = mmap(NULL, size, (write_flag ? PROT_WRITE : 0)  | PROT_READ, MAP_SHARED, *fd, 0);
     if(shmBasePtr == MAP_FAILED) {
         if(create_flag) {
             destroySharedMemory(name, shmBasePtr, *fd, size);
@@ -30,12 +31,12 @@ void *mapSharedMemory(const char *name, size_t size, int *fd, int create_flag) {
     return shmBasePtr;
 }
 
-void *createSharedMemory(const char *name, size_t size, int *fd) {
-    return mapSharedMemory(name, size, fd, 1);
+void *createSharedMemory(const char *name, size_t size, int *fd, int mode) {
+    return mapSharedMemory(name, size, fd, mode, O_CREAT | O_RDWR);
 }
 
-void *openSharedMemory(const char *name, size_t size, int *fd) {
-    return mapSharedMemory(name, size, fd, 0);
+void *openSharedMemory(const char *name, size_t size, int *fd, int flags) {
+    return mapSharedMemory(name, size, fd, 0, flags);
 }
 
 void closeSharedMemory(void *shmPtr, int fd, size_t size) {
