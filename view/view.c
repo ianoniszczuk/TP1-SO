@@ -93,7 +93,7 @@ void printBoard(GameState *game) {
     printf("\n");
 }
 
-int main(void) {
+int main(int argc, char* argv[]) {
 
     // TODO: pasar a un archivo shm.c 
     // TODO : chequear tema 666
@@ -106,18 +106,13 @@ int main(void) {
         exit(EXIT_FAILURE);
     }
 
-    // Mapeo inicial para obtener dimensiones.
-    GameState *game = mmap(NULL, sizeof(GameState), PROT_READ, MAP_SHARED, fd_state, 0);
-    if (game == MAP_FAILED) {
-        perror("Error mapeando game_state");
-        exit(EXIT_FAILURE);
-    }
-    unsigned short width = game->width, height = game->height;
+    int width = atoi(argv[0]);
+    int height = atoi(argv[1]);
+
     size_t total_size = sizeof(GameState) + width * height * sizeof(int);
-    munmap(game, sizeof(GameState));  // Liberamos el mapeo inicial
 
     // Mapeamos el estado completo (estructura + tablero).
-    game = mmap(NULL, total_size, PROT_READ, MAP_SHARED, fd_state, 0);
+    GameState *game = mmap(NULL, total_size, PROT_READ, MAP_SHARED, fd_state, 0);
     if (game == MAP_FAILED) {
         perror("Error mapeando estado completo");
         exit(EXIT_FAILURE);

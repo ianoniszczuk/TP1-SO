@@ -7,9 +7,9 @@
 #define GAME_STATE "/game_state"
 #define GAME_SYNC "/game_sync"
 
-void initializePlayer(GameState **game, GameSync **sync, int *fdState, int *fdSync, int width2, int height2) {
+void initializePlayer(GameState **game, GameSync **sync, int *fdState, int *fdSync, int width, int height) {
     
-    size_t totalSize = sizeof(GameState) + width2 * height2 * sizeof(int);
+    size_t totalSize = sizeof(GameState) + width * height * sizeof(int);
 
     // Remap with full size
     *game = openSharedMemory(GAME_STATE, totalSize, fdState, O_RDONLY);
