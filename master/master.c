@@ -13,7 +13,7 @@ int main(int argc, char * argv[]){
     int timeout_sec = 10;        // Valor por defecto: 10 seg
     unsigned int seed = 0;       // Si no se pasa, se usará time(NULL)
     char *view_path = NULL;      // Por defecto: sin vista
-    char * arg_width = NULL;
+    char * arg_width = NULL ;
     char * arg_height = NULL;
 
     // Array para guardar las rutas de los jugadores.
@@ -103,6 +103,20 @@ int main(int argc, char * argv[]){
         options.player_paths[i] = player_paths[i];
     }
 
+    //Creo los strings para pasar como argumento a los procesos hijos en el caso de que no se reciban como parametros
+
+    if(arg_height == NULL){
+        char arg1[20];
+        sprintf(arg1, "%d",height);
+        arg_height = arg1;
+    }
+
+    if(arg_width == NULL){
+        char arg2[20];
+        sprintf(arg2, "%d",width);
+        arg_width = arg2;
+    }
+    
     // Inicializar la memoria compartida para el estado del juego.
 
     GameState *state;
@@ -255,7 +269,7 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
 
     pid_t pid;
 
-    char * args[2] = {arg_width,arg_height};
+    char * args[3] = {arg_width,arg_height,NULL};
 
 
     if(view_path != NULL){

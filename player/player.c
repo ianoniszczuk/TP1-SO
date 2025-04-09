@@ -7,14 +7,9 @@
 #define GAME_STATE "/game_state"
 #define GAME_SYNC "/game_sync"
 
-void initializePlayer(GameState **game, GameSync **sync, int *fdState, int *fdSync) {
-    // Open shared memory for game state
-    *game = openSharedMemory(GAME_STATE, sizeof(GameState), fdState, O_RDONLY);
+void initializePlayer(GameState **game, GameSync **sync, int *fdState, int *fdSync, int width2, int height2) {
     
-    // Get dimensions and remap with full size
-    unsigned short width = (*game)->width, height = (*game)->height;
-    size_t totalSize = sizeof(GameState) + width * height * sizeof(int);
-    closeSharedMemory(*game, *fdState, sizeof(GameState));
+    size_t totalSize = sizeof(GameState) + width2 * height2 * sizeof(int);
 
     // Remap with full size
     *game = openSharedMemory(GAME_STATE, totalSize, fdState, O_RDONLY);
@@ -69,7 +64,7 @@ void handlePlayerTurn(GameState *game, GameSync *sync, int player_number) {
     sem_post(&sync->readerCountMutex);
 }
 
-int main(void) {
+int main(int argc, char* argv[]) {
     GameState *game = NULL;
     GameSync *sync = NULL;
     int fdState, fdSync;
@@ -78,8 +73,9 @@ int main(void) {
     // Initialize random seed
     srand(time(NULL));
 
+
     // Initialize shared memory and find player number
-    initializePlayer(&game, &sync, &fdState, &fdSync);
+    initializePlayer(&game, &sync, &fdState, &fdSync, atoi(argv[0]), atoi(argv[1]));
     playerNumber = findPlayerNumber(game);
     if (playerNumber == -1) {
         cleanupPlayer(game, sync, fdState, fdSync);
