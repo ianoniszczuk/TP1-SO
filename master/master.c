@@ -14,7 +14,7 @@ void clean_and_end(int sig) {
 
     if(g_state && g_sync)
         clean_resources(g_state, g_state_size, g_sync);
-    exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE); 
 }
 
 int main(int argc, char * argv[]){
@@ -142,7 +142,7 @@ int main(int argc, char * argv[]){
 
     init_sync_struct(&sync);
 
-     g_state = state;
+    g_state = state;
     g_state_size = sizeof(GameState) + board_size;
 
     init_sync_struct(&sync);
@@ -162,9 +162,6 @@ int main(int argc, char * argv[]){
     handle_movements(state,sync,pipes, num_players,timeout_sec,delay_ms); //Bucle principal
 
     int status;
-
-    //while(wait(&status) > 0);
-
 
     for(int i = 0;i<num_players;i++){
         pid_t pid = waitpid(state->players[i].pid, &status, 0);
