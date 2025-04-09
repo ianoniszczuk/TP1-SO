@@ -10,16 +10,20 @@ GameState *g_state = NULL;
 size_t g_state_size = 0;
 GameSync *g_sync = NULL;
 
-void clean_and_end(int sig) {
-
+void clean_and_exit(){
     if(g_state && g_sync)
         clean_resources(g_state, g_state_size, g_sync);
-    exit(EXIT_FAILURE); 
+    exit(EXIT_FAILURE);
+}
+
+
+void exit_signal(int sig) {
+    clean_and_exit();
 }
 
 int main(int argc, char * argv[]){
 
-    signal(SIGINT, clean_and_end);
+    signal(SIGINT, exit_signal);
 
     unsigned short width = 10;   // Valor por defecto y mínimo: 10
     unsigned short height = 10;  // Valor por defecto y mínimo: 10
@@ -77,14 +81,14 @@ int main(int argc, char * argv[]){
                 fprintf(stderr,
                         "Uso: %s [-w width] [-h height] [-d delay] [-t timeout] [-s seed] [-v view] -p player1 [player2 ... player9]\n",
                         argv[0]);
-                exit(EXIT_FAILURE);
+                clean_and_exit();
         }
     }
 
     // Verificar que se haya indicado la opción -p para jugadores.
     if (!players_flag) {
         fprintf(stderr, "Error: Falta la opción -p para especificar los jugadores.\n");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
 
     // Todos los argumentos restantes (desde optind) se consideran rutas de jugadores.
@@ -95,7 +99,7 @@ int main(int argc, char * argv[]){
     // Validar que se haya proporcionado al menos 1 jugador.
     if (num_players < 1) {
         fprintf(stderr, "Error: Se debe proporcionar al menos 1 jugador.\n");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
 
     // Si no se proporcionó seed, usar time(NULL) como valor por defecto.
@@ -205,21 +209,21 @@ void init_shared_memory(GameState **state, size_t board_size, Options * options)
     int fd = shm_open(GAME_STATE, O_RDWR | O_CREAT, 0666);
     if(fd==-1){
         perror("Error creando la memoria compartida");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
 
     size_t total_size = sizeof(GameState) + board_size;
     
     if(ftruncate(fd, total_size) == -1){
         perror("Error al truncar la memoria compartida");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
 
     *state = mmap(NULL, total_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
     if((*state) == MAP_FAILED){
         perror("Error mapeando la memoria compartida");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
     
     (*state)->width = options->width;
@@ -235,7 +239,7 @@ void init_shared_memory(GameState **state, size_t board_size, Options * options)
 
     if (fchmod(fd, 0444) == -1) {
         perror("fchmod");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }    
 
     close(fd);   
@@ -245,18 +249,18 @@ void init_sync_struct(GameSync **sync){
     int fd = shm_open(GAME_SYNC, O_CREAT | O_RDWR, 0666);
     if(fd == -1){
         perror("shm_open GAME_SYNC");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
 
     if(ftruncate(fd, sizeof(GameSync)) == -1){
         perror("ftruncate GAME_SYNC");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
 
     *sync = mmap(NULL, sizeof(GameSync), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if(*sync == MAP_FAILED){
         perror("Error mapeando game_sync");
-        exit(EXIT_FAILURE);
+        clean_and_exit();
     }
 
     // Semaforos para la sincronizacion de la view y el master
@@ -277,7 +281,7 @@ void create_pipes(int pipes[][2], int num_players){
     for(int i = 0;i<num_players;i++){
         if(pipe(pipes[i]) == -1){
             perror("Error creando los pipes");
-            exit(EXIT_FAILURE);
+            clean_and_exit();
         }
     }
 }
@@ -293,14 +297,14 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
         pid = fork();
         if(pid == -1){
             perror("Error en fork");
-            exit(EXIT_FAILURE);
+            clean_and_exit();
         }
         else if(pid == 0){
 
             
             execve(view_path, args,NULL); //esto es sin argumentos, hay q crearlos
             perror("Error en execve");
-            exit(EXIT_FAILURE);
+            clean_and_exit();
         }
     }
 
@@ -308,7 +312,7 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
         pid = fork();
         if(pid == -1){
             perror("Error en fork");
-            exit(EXIT_FAILURE);
+            clean_and_exit();
         }
         else if(pid == 0){
 
@@ -323,12 +327,12 @@ void create_players_and_view(char *view_path, char *player_paths[],int num_playe
 
             if(dup2(pipes[i][1], STDOUT_FILENO) == -1){
                 perror("Error en dup2");
-                exit(EXIT_FAILURE);
+                clean_and_exit();
             }
 
             execve(player_paths[i], args,NULL); //esto es sin argumentos, hay q crearlos
             perror("Error en execve");
-            exit(EXIT_FAILURE);
+            clean_and_exit();
         } else {
 
             close(pipes[i][1]);
