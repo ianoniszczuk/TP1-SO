@@ -1,11 +1,25 @@
 #include "master.h"
 
+
 #define GAME_STATE "/game_state"
 #define GAME_SYNC "/game_sync"
 
 int processReturn[9];
 
+GameState *g_state = NULL;
+size_t g_state_size = 0;
+GameSync *g_sync = NULL;
+
+void clean_and_end(int sig) {
+
+    if(g_state && g_sync)
+        clean_resources(g_state, g_state_size, g_sync);
+    exit(EXIT_FAILURE);
+}
+
 int main(int argc, char * argv[]){
+
+    signal(SIGINT, clean_and_end);
 
     unsigned short width = 10;   // Valor por defecto y mínimo: 10
     unsigned short height = 10;  // Valor por defecto y mínimo: 10
@@ -127,6 +141,12 @@ int main(int argc, char * argv[]){
     init_shared_memory(&state, board_size, &options);
 
     init_sync_struct(&sync);
+
+     g_state = state;
+    g_state_size = sizeof(GameState) + board_size;
+
+    init_sync_struct(&sync);
+    g_sync = sync;
 
     int pipes[num_players][2];
 
@@ -494,3 +514,4 @@ void clean_resources(GameState *state, size_t state_size, GameSync *sync) {
     shm_unlink(GAME_STATE);
     shm_unlink(GAME_SYNC);
 }
+

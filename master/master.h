@@ -13,6 +13,7 @@
 #include <time.h>
 #include <sys/select.h>
 #include <getopt.h>
+#include <signal.h>
 #include "../libraries/sharedHeaders.h"
 
 #define MAX_PLAYERS 9
@@ -45,3 +46,5 @@ void clean_resources(GameState *state, size_t state_size, GameSync *sync);
 void print_options(Options * options);
 
 void printFinalResults(GameState *state);
+
+void clean_and_end();
