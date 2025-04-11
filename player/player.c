@@ -87,10 +87,11 @@ int findPlayerNumber(GameState *game) {
  * @param game          Pointer to GameState.
  * @param sync          Pointer to GameSync.
  * @param playerNumber Player index.
+ * @return              Boolean indicating if player can continue (false if blocked).
  */
-void handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber) {
+bool handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber) {
     if (game->players[playerNumber].blocked) {
-        return;
+        return false; // Player is blocked, signal to exit
     }
 
     // Reader-writer synchronization
@@ -105,6 +106,8 @@ void handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber) {
 
     // Generate and send a random movement (0 to 7)
     unsigned char movimiento = (unsigned char)(rand() % 8);
+    
+    // Ensure we're writing a single byte correctly
     if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
         ERROR_EXIT("Error writing movement");
     }
@@ -115,6 +118,8 @@ void handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber) {
         sem_post(&sync->resourceAccess);
     }
     sem_post(&sync->readerCountMutex);
+    
+    return true; // Player can continue
 }
 
 int main(int argc, char *argv[]) {
@@ -137,10 +142,14 @@ int main(int argc, char *argv[]) {
 
     // Main game loop
     while (!game->game_over) {
-        handlePlayerTurn(game, sync, playerNumber);
+        if (!handlePlayerTurn(game, sync, playerNumber)) {
+            // Player is blocked, exit the loop
+            break;
+        }
         sleep(1);  // Delay between turns
     }
 
+    
     cleanupPlayerMemory(pm);
     return EXIT_SUCCESS;
 }
