@@ -44,10 +44,10 @@ void printCellRow(int value, int py, int x, int y, GameState *game){
         }
         else {
             if ((px == CELL_SIZE/2) && (py == px)){
-                printf("%s%s %d", ANSI_BG_BLACK, ANSI_COLOR_BLACK, value);
+                printf("%s%s %d", ANSI_BG_BLACK, ANSI_BG_WHITE, value);
             }
             else {
-                printf("%s%s  ", ANSI_BG_BLACK, ANSI_COLOR_BLACK);
+                printf("%s%s  ", ANSI_BG_BLACK, ANSI_BG_WHITE);
             }
         }
         printf(ANSI_COLOR_RESET);
