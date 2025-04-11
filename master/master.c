@@ -404,6 +404,9 @@ void distribute_players(GameState *state){
             x = rand() % state->width;
             y = rand() % state->height;
             cell_index = y * state->width + x;
+            
+            // Check if cell is already occupied by a player or has an invalid value
+            // state->board[cell_index] <= 0 means it's already occupied by a player
         } while (state->board[cell_index] <= 0); // Check if cell is already occupied
         
         state->players[i].x = x;
