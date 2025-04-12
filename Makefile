@@ -14,6 +14,10 @@ VIEW_VIEJA_SRC = view/viewVieja.c
 SHARED_MEMORY_SRC = libraries/sharedMemoryAdt.c
 GAME_STATE_ADT_SRC = libraries/gameStateAdt.c
 GAME_SYNC_ADT_SRC = libraries/gameSyncAdt.c
+GAME_CONFIG_SRC = libraries/gameConfig.c
+ARG_PARSER_ADT_SRC = libraries/argParserAdt.c
+PROCESS_MANAGER_ADT_SRC = libraries/processManagerAdt.c
+GAME_LOGIC_ADT_SRC = libraries/gameLogicAdt.c
 
 # Object files
 MASTER_OBJ = $(EXEC_DIR)/master.o
@@ -23,6 +27,10 @@ VIEW_VIEJA_OBJ = $(EXEC_DIR)/viewVieja.o
 SHARED_MEMORY_OBJ = $(EXEC_DIR)/sharedMemoryAdt.o
 GAME_STATE_ADT_OBJ = $(EXEC_DIR)/gameStateAdt.o
 GAME_SYNC_ADT_OBJ = $(EXEC_DIR)/gameSyncAdt.o
+GAME_CONFIG_OBJ = $(EXEC_DIR)/gameConfig.o
+ARG_PARSER_ADT_OBJ = $(EXEC_DIR)/argParserAdt.o
+PROCESS_MANAGER_ADT_OBJ = $(EXEC_DIR)/processManagerAdt.o
+GAME_LOGIC_ADT_OBJ = $(EXEC_DIR)/gameLogicAdt.o
 
 # Binary files
 MASTER_BIN = $(EXEC_DIR)/master
@@ -30,11 +38,16 @@ PLAYER_BIN = $(EXEC_DIR)/player
 VIEW_BIN = $(EXEC_DIR)/view
 VIEW_VIEJA_BIN = $(EXEC_DIR)/viewVieja
 
+# All ADT Objects used by master
+MASTER_ADT_OBJS = $(SHARED_MEMORY_OBJ) $(GAME_STATE_ADT_OBJ) $(GAME_SYNC_ADT_OBJ) \
+                 $(GAME_CONFIG_OBJ) $(ARG_PARSER_ADT_OBJ) $(PROCESS_MANAGER_ADT_OBJ) \
+                 $(GAME_LOGIC_ADT_OBJ)
+
 all: $(MASTER_BIN) $(PLAYER_BIN) $(VIEW_BIN) $(VIEW_VIEJA_BIN)
 
-$(EXEC_DIR)/master: $(MASTER_OBJ) $(SHARED_MEMORY_OBJ) $(GAME_STATE_ADT_OBJ) $(GAME_SYNC_ADT_OBJ)
+$(EXEC_DIR)/master: $(MASTER_OBJ) $(MASTER_ADT_OBJS)
 	@mkdir -p $(EXEC_DIR)
-	$(CC) $(MASTER_OBJ) $(SHARED_MEMORY_OBJ) $(GAME_STATE_ADT_OBJ) $(GAME_SYNC_ADT_OBJ) -o $@ $(LDFLAGS)
+	$(CC) $(MASTER_OBJ) $(MASTER_ADT_OBJS) -o $@ $(LDFLAGS)
 
 $(EXEC_DIR)/player: $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ)
 	@mkdir -p $(EXEC_DIR)
@@ -74,6 +87,22 @@ $(GAME_STATE_ADT_OBJ): $(GAME_STATE_ADT_SRC)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(GAME_SYNC_ADT_OBJ): $(GAME_SYNC_ADT_SRC)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(GAME_CONFIG_OBJ): $(GAME_CONFIG_SRC)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(ARG_PARSER_ADT_OBJ): $(ARG_PARSER_ADT_SRC)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(PROCESS_MANAGER_ADT_OBJ): $(PROCESS_MANAGER_ADT_SRC)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(GAME_LOGIC_ADT_OBJ): $(GAME_LOGIC_ADT_SRC)
 	@mkdir -p $(EXEC_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 

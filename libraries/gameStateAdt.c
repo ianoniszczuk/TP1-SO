@@ -31,8 +31,7 @@ GameStateAdt initGameState(size_t board_size, Options *options) {
     
     // Set the shared memory permissions to read-only for other processes
     if (fchmod(shmAdt.fd, 0444) == -1) {
-        perror("Error setting permissions on game state shared memory");
-        // Continue despite the error, as this is not fatal
+        ERROR_EXIT("Error setting permissions on game state shared memory");
     }
 
     return gameStateAdt;

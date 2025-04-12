@@ -1,9 +1,21 @@
 #include "view.h"
+#include "sharedMemoryAdt.h"
+#include "sharedHeaders.h"
+#include "errorHandling.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <semaphore.h>
+
+// Names for the shared memory segments
+#define GAME_STATE "/game_state"
+#define GAME_SYNC  "/game_sync"
 
 //Definiciones
-
 int puntajes[9];
-
 bool flag = false;
 
 const char *colorMap[] = {
@@ -18,6 +30,49 @@ const char *colorMap[] = {
     ANSI_COLOR_BLACK
 };
 
+/* Structure that groups the shared memory segments used by the view. */
+typedef struct {
+    SharedMemoryAdt gameAdt;   // Mapping for game_state (read-only)
+    SharedMemoryAdt syncAdt;   // Mapping for game_sync (read-write)
+} ViewMemory;
+
+/**
+ * initViewMemory - Initializes the shared memory segments for the view.
+ *
+ * @param width  Board width.
+ * @param height Board height.
+ * @param game   Output: pointer to the GameState structure.
+ * @param sync   Output: pointer to the GameSync structure.
+ * @return       Pointer to a ViewMemory structure grouping the used ADT objects.
+ */
+ViewMemory *initViewMemory(int width, int height, GameState **game, GameSync **sync) {
+    ViewMemory *vm = malloc(sizeof(ViewMemory));
+    if (!vm) {
+        ERROR_EXIT("malloc ViewMemory");
+    }
+
+    size_t gameTotalSize = sizeof(GameState) + width * height * sizeof(int);
+    vm->gameAdt = shmAdtOpen(GAME_STATE, gameTotalSize, O_RDONLY);
+    *game = (GameState *) vm->gameAdt.addr;
+
+    vm->syncAdt = shmAdtOpen(GAME_SYNC, sizeof(GameSync), O_RDWR);
+    *sync = (GameSync *) vm->syncAdt.addr;
+
+    return vm;
+}
+
+/**
+ * cleanupViewMemory - Frees the resources associated with the shared memory segments.
+ *
+ * @param vm Pointer to the ViewMemory structure.
+ */
+void cleanupViewMemory(ViewMemory *vm) {
+    if (vm) {
+        shmAdtClose(&vm->gameAdt);
+        shmAdtClose(&vm->syncAdt);
+        free(vm);
+    }
+}
 
 int isHead(GameState * game, int value, int x, int y){
     return (x == game->players[-1*value].x && y == game->players[-1*value].y);
@@ -94,52 +149,22 @@ void printBoard(GameState *game) {
 }
 
 int main(int argc, char* argv[]) {
-
-    // TODO: pasar a un archivo shm.c 
-    // TODO : chequear tema 666
-    
-    int fd_state = shm_open("/game_state", O_RDONLY, 0666);
-    int fd_sync = shm_open("/game_sync", O_RDWR, 0666);
-
-    if (fd_state == -1 || fd_sync == -1) {
-        perror("Error abriendo la memoria compartida");
-        exit(EXIT_FAILURE);
-    }
-
     int width = atoi(argv[0]);
     int height = atoi(argv[1]);
+    GameState *game = NULL;
+    GameSync *sync = NULL;
 
-    size_t total_size = sizeof(GameState) + width * height * sizeof(int);
-
-    // Mapeamos el estado completo (estructura + tablero).
-    GameState *game = mmap(NULL, total_size, PROT_READ, MAP_SHARED, fd_state, 0);
-    if (game == MAP_FAILED) {
-        perror("Error mapeando estado completo");
-        exit(EXIT_FAILURE);
-    }
-    close(fd_state);
-
-    // Mapeamos la memoria compartida para la sincronización.
-    GameSync *sync = mmap(NULL, sizeof(GameSync), PROT_READ | PROT_WRITE, MAP_SHARED, fd_sync, 0);
-    if (sync == MAP_FAILED) {
-        perror("Error mapeando game_sync");
-        exit(EXIT_FAILURE);
-    }
-    close(fd_sync);
-    // Bucle principal: espera la señal del máster para imprimir y notifica cuando termina.
-
-
-    //TODO : ver de sacar sleep(2)
+    // Initialize shared memory using our ADT encapsulation
+    ViewMemory *vm = initViewMemory(width, height, &game, &sync);
     
+    // Main loop: wait for master to signal changes and print the board
     while (!game->game_over) {
-        sem_wait(&sync->printNeeded);  // Espera a que el máster indique que hay cambios
+        sem_wait(&sync->printNeeded);  // Wait for master to signal changes
         printBoard(game);
-        sem_post(&sync->printDone);  // Indica al máster que terminó de imprimir
+        sem_post(&sync->printDone);    // Signal master that printing is done
     }
 
-    //TODO: Chequera munmap 
-
-    munmap(game, total_size);
-    munmap(sync, sizeof(GameSync));
+    // Clean up resources
+    cleanupViewMemory(vm);
     return EXIT_SUCCESS;
 }

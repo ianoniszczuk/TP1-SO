@@ -3,6 +3,7 @@
 
 #include "gameConfig.h"
 #include "sharedHeaders.h"
+#include "gameLogicAdt.h"
 #include <stdio.h>      // For printf, fprintf, stderr
 #include <stdlib.h>     // For exit, EXIT_FAILURE, srand, rand
 #include <stddef.h>     // For NULL
@@ -20,6 +21,6 @@ void create_pipes(int pipes[][2], int num_players);
 void create_players_and_view(char *view_path, char *player_paths[], int num_players, int pipes[][2], GameState *state, char *arg_width, char *arg_height);
 void distribute_players(GameState *state);
 void handle_movements(GameState *state, GameSync *sync, int pipes[][2], int num_players, int timeout, int delay_ms);
-void printFinalResults(GameState *state);
+void printFinalResults(GameLogicAdt *logic, int returnCodes[]);
 
 #endif

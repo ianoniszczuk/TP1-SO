@@ -7,6 +7,10 @@ mkdir -p executables
 gcc -Wall -pedantic -I./libraries -c ./libraries/sharedMemoryAdt.c -o ./executables/sharedMemoryAdt.o
 gcc -Wall -pedantic -I./libraries -c ./libraries/gameStateAdt.c -o ./executables/gameStateAdt.o
 gcc -Wall -pedantic -I./libraries -c ./libraries/gameSyncAdt.c -o ./executables/gameSyncAdt.o
+gcc -Wall -pedantic -I./libraries -c ./libraries/gameConfig.c -o ./executables/gameConfig.o
+gcc -Wall -pedantic -I./libraries -c ./libraries/argParserAdt.c -o ./executables/argParserAdt.o
+gcc -Wall -pedantic -I./libraries -c ./libraries/processManagerAdt.c -o ./executables/processManagerAdt.o
+gcc -Wall -pedantic -I./libraries -c ./libraries/gameLogicAdt.c -o ./executables/gameLogicAdt.o
 
 # Compile view
 gcc -Wall -pedantic -I./libraries ./view/view.c ./executables/sharedMemoryAdt.o -o executables/view -pthread -lrt
@@ -14,8 +18,16 @@ gcc -Wall -pedantic -I./libraries ./view/view.c ./executables/sharedMemoryAdt.o 
 # Compile player
 gcc -Wall -pedantic -I./libraries ./player/player.c ./executables/sharedMemoryAdt.o -o executables/player -pthread -lrt
 
-# Compile master
-gcc -Wall -pedantic -I./libraries ./master/master.c ./executables/sharedMemoryAdt.o ./executables/gameStateAdt.o ./executables/gameSyncAdt.o -o executables/master -pthread -lrt
+# Compile master with all ADT libraries
+gcc -Wall -pedantic -I./libraries ./master/master.c \
+  ./executables/sharedMemoryAdt.o \
+  ./executables/gameStateAdt.o \
+  ./executables/gameSyncAdt.o \
+  ./executables/gameConfig.o \
+  ./executables/argParserAdt.o \
+  ./executables/processManagerAdt.o \
+  ./executables/gameLogicAdt.o \
+  -o executables/master -pthread -lrt
 
 # Compile old view (if needed)
 gcc -Wall -pedantic -I./libraries ./view/viewVieja.c ./executables/sharedMemoryAdt.o -o executables/viewVieja -pthread -lrt
