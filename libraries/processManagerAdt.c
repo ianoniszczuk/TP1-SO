@@ -6,6 +6,50 @@
 #include <sys/wait.h>
 #include <string.h>
 
+/**
+ * Helper function to create argument arrays
+ * 
+ * @param programPath Program path to use as first argument
+ * @param argWidth Width argument as string
+ * @param argHeight Height argument as string
+ * @return Allocated argument array, must be freed with freeArgs
+ */
+static char** createArgs(const char *programPath, const char *argWidth, const char *argHeight) {
+    char **args = malloc(4 * sizeof(char *));
+    if (!args) {
+        return NULL;
+    }
+    
+    args[0] = strdup(programPath);
+    args[1] = strdup(argWidth);
+    args[2] = strdup(argHeight);
+    args[3] = NULL;
+    
+    if (!args[0] || !args[1] || !args[2]) {
+        for (int i = 0; i < 3; i++) {
+            if (args[i]) free(args[i]);
+        }
+        free(args);
+        return NULL;
+    }
+    
+    return args;
+}
+
+/**
+ * Helper function to free argument arrays
+ * 
+ * @param args Argument array to free
+ */
+static void freeArgs(char **args) {
+    if (!args) return;
+    
+    for (int i = 0; i < 3; i++) {
+        if (args[i]) free(args[i]);
+    }
+    free(args);
+}
+
 ProcessManagerAdt initProcessManager(int numPlayers) {
     ProcessManagerAdt pm;
     
@@ -38,107 +82,106 @@ void createPipes(ProcessManagerAdt *pm) {
     }
 }
 
+/**
+ * Helper function to create a view process
+ * 
+ * @param pm Process manager
+ * @param viewPath Path to view executable
+ * @param argWidth Width argument as string
+ * @param argHeight Height argument as string
+ * @return true on success, false on failure
+ */
+static bool createViewProcess(ProcessManagerAdt *pm, char *viewPath, char *argWidth, char *argHeight) {
+    if (viewPath == NULL) {
+        return true;  // No view to create, not an error
+    }
+    
+    char **args = createArgs(viewPath, argWidth, argHeight);
+    if (!args) {
+        return false;
+    }
+    
+    pid_t pid = fork();
+    if (pid == -1) {
+        freeArgs(args);
+        return false;
+    } else if (pid == 0) {
+        // Child process
+        execve(viewPath, args, NULL);
+        ERROR_EXIT("Error in execve (view)");
+    }
+    
+    // Parent process
+    pm->viewPid = pid;
+    pm->hasView = true;
+    freeArgs(args);
+    return true;
+}
+
+/**
+ * Helper function to create a player process
+ * 
+ * @param pm Process manager
+ * @param state Game state to update with player PID
+ * @param playerPath Path to player executable
+ * @param argWidth Width argument as string
+ * @param argHeight Height argument as string
+ * @param playerIndex Index of the player
+ * @return true on success, false on failure
+ */
+static bool createPlayerProcess(ProcessManagerAdt *pm, GameState *state, char *playerPath, 
+                               char *argWidth, char *argHeight, int playerIndex) {
+    char **args = createArgs(playerPath, argWidth, argHeight);
+    if (!args) {
+        return false;
+    }
+    
+    pid_t pid = fork();
+    if (pid == -1) {
+        freeArgs(args);
+        return false;
+    } else if (pid == 0) {
+        // Child process - close unused pipe ends
+        for (int j = 0; j < pm->numPlayers; j++) {
+            close(pm->pipes[j][0]);
+            if (playerIndex != j) {
+                close(pm->pipes[j][1]);
+            }
+        }
+
+        if (dup2(pm->pipes[playerIndex][1], STDOUT_FILENO) == -1) {
+            ERROR_EXIT("Error in dup2");
+        }
+
+        execve(playerPath, args, NULL);
+        ERROR_EXIT("Error in execve (player)");
+    }
+    
+    // Parent process
+    close(pm->pipes[playerIndex][1]);
+    pm->playerPids[playerIndex] = pid;
+    state->players[playerIndex].pid = pid;
+    freeArgs(args);
+    return true;
+}
+
 void createProcesses(ProcessManagerAdt *pm, char *viewPath, char *playerPaths[], 
                      GameState *state, char *argWidth, char *argHeight) {
-    pid_t pid;
-    
-    // Create dynamically allocated copies of arguments - argv[0] should be program name
-    char **args = malloc(4 * sizeof(char *));
-    if (!args) {
-        cleanupProcessManager(pm);
-        ERROR_EXIT("Error allocating memory for args");
-    }
-    
-    // For the view
+    // Create view process if specified
     if (viewPath != NULL) {
-        args[0] = strdup(viewPath);  // Program name
-        args[1] = strdup(argWidth);  // First arg (width)
-        args[2] = strdup(argHeight); // Second arg (height)
-        args[3] = NULL;              // NULL terminator
-        
-        if (!args[0] || !args[1] || !args[2]) {
-            
-            for (int i = 0; i < 3; i++)
-                if (args[i]) free(args[i]);
-            free(args);
+        if (!createViewProcess(pm, viewPath, argWidth, argHeight)) {
             cleanupProcessManager(pm);
-            ERROR_EXIT("Error duplicating view argument strings");
-        }
-
-        pid = fork();
-        if (pid == -1) {
-            for (int i = 0; i < 3; i++)
-                if (args[i]) free(args[i]);
-            free(args);
-            cleanupProcessManager(pm);
-            perror("Error in fork");
-        }
-        else if (pid == 0) {
-            // Child process will call execve, so we don't need to free in this branch
-            execve(viewPath, args, NULL);
-            ERROR_EXIT("Error en execve (view)");
-        }
-        
-        // Store view process ID
-        pm->viewPid = pid;
-        pm->hasView = true;
-        
-        // Free view args in parent
-        for (int i = 0; i < 3; i++)
-            if (args[i]) free(args[i]);
-    }
-
-    for (int i = 0; i < pm->numPlayers; i++) {
-        // Reallocate args for each player process
-        args[0] = strdup(playerPaths[i]); // Program name
-        args[1] = strdup(argWidth);       // First arg (width)
-        args[2] = strdup(argHeight);      // Second arg (height)
-        args[3] = NULL;                   // NULL terminator
-        
-        if (!args[0] || !args[1] || !args[2]) {
-            for (int i = 0; i < 3; i++)
-                if (args[i]) free(args[i]);
-            free(args);
-            cleanupProcessManager(pm);
-            ERROR_EXIT("Error duplicating player argument strings");
-        }
-
-        pid = fork();
-        if (pid == -1) {
-            for (int i = 0; i < 3; i++)
-                if (args[i]) free(args[i]);
-            free(args);
-            cleanupProcessManager(pm);
-            ERROR_EXIT("Error en fork");
-        }
-        else if (pid == 0) {
-            // Close unused pipe ends in child
-            for (int j = 0; j < pm->numPlayers; j++) {
-                close(pm->pipes[j][0]);
-                if (i != j) {
-                    close(pm->pipes[j][1]);
-                }
-            }
-
-            if (dup2(pm->pipes[i][1], STDOUT_FILENO) == -1) {
-                ERROR_EXIT("Error in dup2");
-            }
-
-            execve(playerPaths[i], args, NULL);
-            ERROR_EXIT("Error en execve (player)");
-        } else {
-            close(pm->pipes[i][1]);
-            pm->playerPids[i] = pid;
-            state->players[i].pid = pid;
-            
-            // Free player args in parent after fork
-            for (int j = 0; j < 3; j++)
-                if (args[j]) free(args[j]);
+            ERROR_EXIT("Error creating view process");
         }
     }
     
-    // Free args array
-    free(args);
+    // Create player processes
+    for (int i = 0; i < pm->numPlayers; i++) {
+        if (!createPlayerProcess(pm, state, playerPaths[i], argWidth, argHeight, i)) {
+            cleanupProcessManager(pm);
+            ERROR_EXIT("Error creating player process");
+        }
+    }
 }
 
 void waitForPlayers(ProcessManagerAdt *pm, int returnCodes[]) {

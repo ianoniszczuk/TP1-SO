@@ -49,16 +49,19 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
     struct timeval tv;
     fd_set rfds;
     int maxFd = 0;
-    int lastValidTime = time(NULL);
     int currentPlayer = 0;
+    time_t lastMoveAttemptTime = time(NULL);  // Time of last move attempt
     
     int dx[8] = {0, 1, 1, 1, 0, -1, -1, -1};
     int dy[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 
     while (!logic->state->gameOver) {
-        bool blockedFlag = true;        
-
-        if (difftime(time(NULL), lastValidTime) > logic->timeout) {
+        // Check if game is taking too long (handles player infinite loops)
+        time_t currentTime = time(NULL);
+        double timeSinceLastMove = difftime(currentTime, lastMoveAttemptTime);
+        
+        // If we've received activity but no valid moves for too long, trigger timeout
+        if (timeSinceLastMove > logic->timeout) {
             sem_wait(&logic->sync->turnstile);
             sem_wait(&logic->sync->resourceAccess);
             
@@ -67,7 +70,7 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             sem_post(&logic->sync->printNeeded);
             sem_wait(&logic->sync->printDone);
 
-            printf("Timeout\n");
+            printf("Timeout: No player movement detected for %d seconds\n", logic->timeout);
 
             sem_post(&logic->sync->resourceAccess);
             sem_post(&logic->sync->turnstile);
@@ -84,8 +87,9 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             } 
         }
 
-        tv.tv_sec = 1;
-        tv.tv_usec = 0;
+        // Use a shorter timeout for select to check for timeout condition more frequently
+        tv.tv_sec = 0;
+        tv.tv_usec = 500000; // 500ms
 
         int activity = select(maxFd + 1, &rfds, NULL, NULL, &tv);
 
@@ -95,8 +99,12 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
         }
 
         if (activity == 0) {
+            // No activity detected, continue to check timeout
             continue;
         }
+        
+        // Update the last attempt time whenever we detect activity
+        lastMoveAttemptTime = currentTime;
         
         for (int i = 0; i < pm->numPlayers; i++) { 
             int idx = (currentPlayer + i) % pm->numPlayers;
@@ -134,17 +142,16 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                 }
 
                 if (update) {
-                    lastValidTime = time(NULL);
                     logic->state->players[idx].validMovements++;
                     logic->state->players[idx].points += logic->state->board[cellIndex];
-                    logic->state->players[idx].x = logic->state->players[idx].x + dx[move];
-                    logic->state->players[idx].y = logic->state->players[idx].y + dy[move];
+                    logic->state->players[idx].x = newX;
+                    logic->state->players[idx].y = newY;
                     logic->state->board[cellIndex] = -(idx);
                 }
 
                 // Check if any players are blocked
                 for (int k = 0; k < pm->numPlayers; k++) {
-                    blockedFlag = true;
+                    bool blockedFlag = true;
 
                     for (int j = 0; j < 8; j++) {
                         int toCheckX = logic->state->players[k].x + dx[j];

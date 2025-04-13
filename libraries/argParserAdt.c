@@ -32,16 +32,14 @@ ArgParserAdt parseArguments(int argc, char *argv[], Options *options) {
                 parser.argWidth = optarg;
                 options->width = (unsigned short)atoi(optarg);
                 if (options->width < 10) {
-                    perror("Warning: width less than 10, adjusting to 10");
-                    options->width = 10;
+                    ERROR_EXIT("Error: Minimal board dimensions: 10x10");
                 }
                 break;
             case 'h':
                 parser.argHeight = optarg;
                 options->height = (unsigned short)atoi(optarg);
                 if (options->height < 10) {
-                    perror("Warning: height less than 10, adjusting to 10");
-                    options->height = 10;
+                     ERROR_EXIT("Error: Minimal board dimensions: 10x10");
                 }
                 break;
             case 'd':
