@@ -1,0 +1,630 @@
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3  1  4  6  5  3  9  2  9 
+ 2  7 -1  4  3  0  6  9  6  3 
+ 8  7  6  5  4  0  4  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;5), puntaje : 3, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (2;5), puntaje : 0, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1  4  6  5  3  9  2  9 
+ 2  7 -1  4  3  0  6  9  6  3 
+ 8  7  6  5  4  0  4  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;5), puntaje : 3, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (2;4), puntaje : 1, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1  4  6  5  3  9  2  9 
+ 2  7 -1  4  3  0  6  9  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;6), puntaje : 7, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (2;4), puntaje : 1, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1  4  6  5  3  9  2  9 
+ 2  7 -1 -1  3  0  6  9  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;6), puntaje : 7, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (3;5), puntaje : 5, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1  4  6  5  3  9  2  9 
+ 2  7 -1 -1  3  0  6  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (7;5), puntaje : 16, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (3;5), puntaje : 5, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1  4 -1  5  3  9  2  9 
+ 2  7 -1 -1  3  0  6  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (7;5), puntaje : 16, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (4;4), puntaje : 11, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1  4 -1  5  3  9  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;5), puntaje : 22, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (4;4), puntaje : 11, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1 -1 -1  5  3  9  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;5), puntaje : 22, movs invalidos : 0, bloqueado? 0
+Jugador  1, posicion actual : (3;4), puntaje : 15, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1 -1 -1  5  3  9  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;5), puntaje : 22, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (3;4), puntaje : 15, movs invalidos : 0, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1 -1 -1  5  3  9  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;5), puntaje : 22, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (3;4), puntaje : 15, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7  3  9  4  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (7;4), puntaje : 31, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (3;4), puntaje : 15, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7 -1  9  4  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (7;4), puntaje : 31, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (4;3), puntaje : 18, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5  6  4  2  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;3), puntaje : 35, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (4;3), puntaje : 18, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5 -1  4  2  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;3), puntaje : 35, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (3;2), puntaje : 24, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9  6  4  7  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;2), puntaje : 37, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (3;2), puntaje : 24, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9 -1  4  7  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;2), puntaje : 37, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (2;1), puntaje : 30, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6  1  9  9  3  7  3  2  9  7 
+ 5  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;1), puntaje : 44, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (2;1), puntaje : 30, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6 -1  9  9  3  7  3  2  9  7 
+ 5  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;1), puntaje : 44, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (1;0), puntaje : 31, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6 -1  9  9  3  0  3  2  9  7 
+ 5  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;0), puntaje : 51, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (1;0), puntaje : 31, movs invalidos : 1, bloqueado? 0
+
+Tablero (10 x 10):
+ 6 -1  9  9  3  0  3  2  9  7 
+ 5  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;0), puntaje : 51, movs invalidos : 1, bloqueado? 0
+Jugador  1, posicion actual : (1;0), puntaje : 31, movs invalidos : 2, bloqueado? 0
+
+Tablero (10 x 10):
+ 6 -1  9  9  3  0  3  2  9  7 
+ 5  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;0), puntaje : 51, movs invalidos : 2, bloqueado? 0
+Jugador  1, posicion actual : (1;0), puntaje : 31, movs invalidos : 2, bloqueado? 0
+
+Tablero (10 x 10):
+ 6 -1  9  9  3  0  3  2  9  7 
+-1  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;0), puntaje : 51, movs invalidos : 2, bloqueado? 0
+Jugador  1, posicion actual : (0;1), puntaje : 36, movs invalidos : 2, bloqueado? 0
+
+Tablero (10 x 10):
+ 6 -1  9  9  3  0  3  2  9  7 
+-1  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;0), puntaje : 51, movs invalidos : 3, bloqueado? 0
+Jugador  1, posicion actual : (0;1), puntaje : 36, movs invalidos : 2, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  3  0  3  2  9  7 
+-1  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;0), puntaje : 51, movs invalidos : 3, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 2, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  3  0  0  2  9  7 
+-1  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;0), puntaje : 54, movs invalidos : 3, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 2, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  3  0  0  2  9  7 
+-1  9 -1  4  0  9  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (6;0), puntaje : 54, movs invalidos : 3, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 3, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  3  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;1), puntaje : 63, movs invalidos : 3, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 3, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  3  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;1), puntaje : 63, movs invalidos : 3, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 4, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  3  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;1), puntaje : 63, movs invalidos : 4, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 4, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  3  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (5;1), puntaje : 63, movs invalidos : 4, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 5, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 4, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 5, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 4, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 6, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 5, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 6, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 5, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 7, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 6, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 7, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 6, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 8, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 7, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 8, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 7, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 9, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 8, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 9, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 8, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 10, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 9, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 10, bloqueado? 0
+
+Tablero (10 x 10):
+-1 -1  9  9  0  0  0  2  9  7 
+-1  9 -1  4  0  0  3  9  7  5 
+ 6  4  5 -1  4  0  9  6  9  9 
+ 1  4  9  7 -1  9  0  3  1  2 
+ 9  3 -1 -1 -1  5  3  0  2  9 
+ 2  7 -1 -1  3  0  0  0  6  3 
+ 8  7  6  5  4  0  0  6  9  2 
+ 7  7  4  5  1  9  7  1  6  8 
+ 7  6  5  8  9  5  1  3  4  6 
+ 6  9  1  9  4  3  6  5  8  4 
+
+Jugador  0, posicion actual : (4;0), puntaje : 66, movs invalidos : 9, bloqueado? 0
+Jugador  1, posicion actual : (0;0), puntaje : 42, movs invalidos : 10, bloqueado? 0
+

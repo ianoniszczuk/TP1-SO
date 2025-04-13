@@ -10,8 +10,8 @@
 
 GameSyncAdt initGameSync() {
     GameSyncAdt gameSyncAdt;
-    SharedMemoryAdt shmAdt = shmAdtOpen(GAME_SYNC, sizeof(GameSync), O_RDWR | O_CREAT);
-    gameSyncAdt.sync = (GameSync *)shmAdt.addr;
+    gameSyncAdt.shm = shmAdtOpen(GAME_SYNC, sizeof(GameSync), O_RDWR | O_CREAT);
+    gameSyncAdt.sync = (GameSync *)gameSyncAdt.shm.addr;
 
     sem_init(&(gameSyncAdt.sync->printNeeded), 1, 0);
     sem_init(&(gameSyncAdt.sync->printDone), 1, 0);
@@ -24,11 +24,14 @@ GameSyncAdt initGameSync() {
 }
 
 void cleanupGameSync(GameSyncAdt *gameSyncAdt) {
+    // Destroy all semaphores first
     sem_destroy(&(gameSyncAdt->sync->printNeeded));
     sem_destroy(&(gameSyncAdt->sync->printDone));
     sem_destroy(&(gameSyncAdt->sync->turnstile));
     sem_destroy(&(gameSyncAdt->sync->resourceAccess));
     sem_destroy(&(gameSyncAdt->sync->readerCountMutex));
-    munmap(gameSyncAdt->sync, sizeof(GameSync));
-    shm_unlink(GAME_SYNC);
+    
+    // Use shmAdtDestroy which will properly unmap, close, and free the name
+    shmAdtDestroy(&gameSyncAdt->shm);
+    // No need to do separate munmap and shm_unlink as they're handled by shmAdtDestroy
 }

@@ -55,8 +55,8 @@ PlayerMemory *initPlayerMemory(int width, int height, GameState **game, GameSync
  */
 void cleanupPlayerMemory(PlayerMemory *pm) {
     if (pm) {
-        shmAdtClose(&pm->gameAdt);
-        shmAdtClose(&pm->syncAdt);
+        shmAdtClose(&pm->gameAdt);  // Use shmAdtClose (not destroy) since we're not the creator
+        shmAdtClose(&pm->syncAdt);  // Use shmAdtClose (not destroy) since we're not the creator
         free(pm);
     }
 }

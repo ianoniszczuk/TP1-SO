@@ -14,8 +14,8 @@ GameStateAdt initGameState(size_t board_size, Options *options) {
     size_t total_size = sizeof(GameState) + board_size;
     
     // Open the shared memory with read-write access for initialization
-    SharedMemoryAdt shmAdt = shmAdtOpen(GAME_STATE, total_size, O_RDWR | O_CREAT);
-    gameStateAdt.state = (GameState *)shmAdt.addr;
+    gameStateAdt.shm = shmAdtOpen(GAME_STATE, total_size, O_RDWR | O_CREAT);
+    gameStateAdt.state = (GameState *)gameStateAdt.shm.addr;
     gameStateAdt.size = total_size;
     
     // Initialize the game state
@@ -30,7 +30,7 @@ GameStateAdt initGameState(size_t board_size, Options *options) {
     }
     
     // Set the shared memory permissions to read-only for other processes
-    if (fchmod(shmAdt.fd, 0444) == -1) {
+    if (fchmod(gameStateAdt.shm.fd, 0444) == -1) {
         ERROR_EXIT("Error setting permissions on game state shared memory");
     }
 
@@ -38,6 +38,7 @@ GameStateAdt initGameState(size_t board_size, Options *options) {
 }
 
 void cleanupGameState(GameStateAdt *gameStateAdt) {
-    munmap(gameStateAdt->state, gameStateAdt->size);
-    shm_unlink(GAME_STATE);
+    // Use shmAdtDestroy which will properly unmap, close, and free the name
+    shmAdtDestroy(&gameStateAdt->shm);
+    // No need to do separate munmap and shm_unlink as they're handled by shmAdtDestroy
 }

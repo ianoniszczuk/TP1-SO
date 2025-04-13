@@ -53,19 +53,33 @@ SharedMemoryAdt shmAdtOpen(const char *name, size_t size, int flags) {
 }
 
 void shmAdtClose(SharedMemoryAdt *shm) {
-    if (munmap(shm->addr, shm->size) == -1) {
-        ERROR_EXIT("munmap");
+    if (!shm) {
+        return;
     }
-    close(shm->fd);
-    free(shm->name);
-    shm->addr = NULL;
-    shm->fd = -1;
-    shm->name = NULL;
+    
+    if (shm->addr) {
+        if (munmap(shm->addr, shm->size) == -1) {
+            perror("munmap");
+        }
+        shm->addr = NULL;
+    }
+    
+    if (shm->fd != -1) {
+        close(shm->fd);
+        shm->fd = -1;
+    }
+    
+    if (shm->name) {
+        free(shm->name);
+        shm->name = NULL;
+    }
 }
 
 void shmAdtDestroy(SharedMemoryAdt *shm) {
-    if (shm_unlink(shm->name) == -1) {
-        ERROR_EXIT("shm_unlink");
+    if (shm && shm->name) {
+        if (shm_unlink(shm->name) == -1) {
+            perror("shm_unlink");
+        }
     }
     shmAdtClose(shm);
 }
