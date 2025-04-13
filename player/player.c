@@ -14,11 +14,7 @@
 #define GAME_STATE "/game_state"
 #define GAME_SYNC  "/game_sync"
 
-/* Structure that groups the shared memory segments used by the player. */
-typedef struct {
-    SharedMemoryAdt gameAdt;   // Mapping for game_state (read-only)
-    SharedMemoryAdt syncAdt;   // Mapping for game_sync (read-write)
-} PlayerMemory;
+// PlayerMemory is now defined in player.h
 
 /**
  * initPlayerMemory - Initializes the shared memory segments for the player.
@@ -70,7 +66,7 @@ void cleanupPlayerMemory(PlayerMemory *pm) {
  * @return     Player index if found; -1 otherwise.
  */
 int findPlayerNumber(GameState *game) {
-    for (unsigned int i = 0; i < game->player_count; i++) {
+    for (unsigned int i = 0; i < game->playerCount; i++) {
         if (getpid() == game->players[i].pid) {
             return i;
         }
@@ -141,7 +137,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Main game loop
-    while (!game->game_over) {
+    while (!game->gameOver) {
         if (!handlePlayerTurn(game, sync, playerNumber)) {
             // Player is blocked, exit the loop
             break;

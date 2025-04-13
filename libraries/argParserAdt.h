@@ -10,8 +10,6 @@
 typedef struct {
     char *argWidth;          // Width argument as string
     char *argHeight;         // Height argument as string
-    bool dynamicWidth;       // Whether width was dynamically allocated
-    bool dynamicHeight;      // Whether height was dynamically allocated
 } ArgParserAdt;
 
 /**
@@ -20,15 +18,8 @@ typedef struct {
  * @param argc Number of arguments
  * @param argv Array of argument strings
  * @param options Options structure to populate
- * @return ArgParserAdt structure with dynamic argument values
+ * @return ArgParserAdt structure with argument values
  */
 ArgParserAdt parseArguments(int argc, char *argv[], Options *options);
-
-/**
- * Frees resources used by the argument parser
- * 
- * @param parser ArgParserAdt structure
- */
-void cleanupArgParser(ArgParserAdt *parser);
 
 #endif 

@@ -16,7 +16,7 @@ GameLogicAdt initGameLogic(GameState *state, GameSync *sync, int timeout, int de
 }
 
 void distributePlayers(GameLogicAdt *logic) {
-    for (unsigned int i = 0; i < logic->state->player_count; i++) {
+    for (unsigned int i = 0; i < logic->state->playerCount; i++) {
         // Generate random positions until an unoccupied position is found
         int x, y, cellIndex;
         do {
@@ -31,8 +31,8 @@ void distributePlayers(GameLogicAdt *logic) {
         logic->state->players[i].x = x;
         logic->state->players[i].y = y;
         logic->state->players[i].points = 0; // Initial points set to 0, initial cell doesn't count
-        logic->state->players[i].invalid_movements = 0;
-        logic->state->players[i].valid_movements = 0;
+        logic->state->players[i].invalidMovements = 0;
+        logic->state->players[i].validMovements = 0;
         logic->state->players[i].blocked = false;
         
         // Mark the cell as occupied by this player without adding its value to the score
@@ -40,7 +40,7 @@ void distributePlayers(GameLogicAdt *logic) {
     }
     
     // Ensure all players start with zero points (initial cell doesn't count)
-    for (unsigned int i = 0; i < logic->state->player_count; i++) {
+    for (unsigned int i = 0; i < logic->state->playerCount; i++) {
         logic->state->players[i].points = 0;
     }
 }
@@ -55,14 +55,14 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
     int dx[8] = {0, 1, 1, 1, 0, -1, -1, -1};
     int dy[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 
-    while (!logic->state->game_over) {
+    while (!logic->state->gameOver) {
         bool blockedFlag = true;        
 
         if (difftime(time(NULL), lastValidTime) > logic->timeout) {
             sem_wait(&logic->sync->turnstile);
             sem_wait(&logic->sync->resourceAccess);
             
-            logic->state->game_over = true;
+            logic->state->gameOver = true;
 
             sem_post(&logic->sync->printNeeded);
             sem_wait(&logic->sync->printDone);
@@ -126,16 +126,16 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
 
                 // Check for invalid movement conditions
                 if (newX < 0 || newX >= logic->state->width || newY < 0 || newY >= logic->state->height) {
-                    logic->state->players[idx].invalid_movements++;
+                    logic->state->players[idx].invalidMovements++;
                     update = false;
                 } else if (logic->state->board[cellIndex] <= 0) {
-                    logic->state->players[idx].invalid_movements++;
+                    logic->state->players[idx].invalidMovements++;
                     update = false;
                 }
 
                 if (update) {
                     lastValidTime = time(NULL);
-                    logic->state->players[idx].valid_movements++;
+                    logic->state->players[idx].validMovements++;
                     logic->state->players[idx].points += logic->state->board[cellIndex];
                     logic->state->players[idx].x = logic->state->players[idx].x + dx[move];
                     logic->state->players[idx].y = logic->state->players[idx].y + dy[move];
@@ -162,10 +162,10 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                 }
 
                 // Check if game is over (all players blocked)
-                logic->state->game_over = true;
+                logic->state->gameOver = true;
                 for (int i = 0; i < pm->numPlayers; i++) {
                     if (!logic->state->players[i].blocked) {
-                        logic->state->game_over = false;
+                        logic->state->gameOver = false;
                         break;
                     }
                 }
@@ -184,16 +184,16 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             }
         }
 
-        if (logic->state->game_over) {
+        if (logic->state->gameOver) {
             sem_post(&logic->sync->printNeeded);
         }
     }
 }
 
 void printFinalResults(GameLogicAdt *logic, int returnCodes[]) {
-    for (unsigned int i = 0; i < logic->state->player_count; i++) {
+    for (unsigned int i = 0; i < logic->state->playerCount; i++) {
         printf("Jugador %d (%d), puntos: %d, movimientos invalidos: %d\n", 
                i, returnCodes[i], logic->state->players[i].points, 
-               logic->state->players[i].invalid_movements);
+               logic->state->players[i].invalidMovements);
     }
 } 

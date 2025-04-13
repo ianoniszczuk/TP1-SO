@@ -10,7 +10,7 @@ void printBoard(GameState *game) {
 
     const unsigned short width = game->width;
     const unsigned short height = game->height;
-    const unsigned int player_count = game->player_count;
+    const unsigned int playerCount = game->playerCount;
 
     printf("Tablero (%hu x %hu):\n", width, height);
 
@@ -23,8 +23,8 @@ void printBoard(GameState *game) {
     }
     printf("\n");
 
-    for(int i = 0; i < player_count; i++) {
-        printf("Jugador  %d, posicion actual : (%d;%d), puntaje : %d, movs invalidos : %d, bloqueado? %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points,game->players[i].invalid_movements,game->players[i].blocked);
+    for(int i = 0; i < playerCount; i++) {
+        printf("Jugador  %d, posicion actual : (%d;%d), puntaje : %d, movs invalidos : %d, bloqueado? %d\n", i, game->players[i].x, game->players[i].y, game->players[i].points, game->players[i].invalidMovements, game->players[i].blocked);
     }
     printf("\n");
 
@@ -67,7 +67,7 @@ int main(void) {
     // Bucle principal: espera la señal del máster para imprimir y notifica cuando termina.
 
 
-    while (!game->game_over) {
+    while (!game->gameOver) {
         sem_wait(&sync->printNeeded);  // Espera a que el máster indique que hay cambios
         printBoard(game);
         sem_post(&sync->printDone);  // Indica al máster que terminó de imprimir

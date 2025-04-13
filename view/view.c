@@ -112,7 +112,7 @@ void printCellRow(int value, int py, int x, int y, GameState *game){
 void printBoard(GameState *game) {
     const unsigned short width = game->width;
     const unsigned short height = game->height;
-    const unsigned int player_count = game->player_count;
+    const unsigned int playerCount = game->playerCount;
 
     printf("%s", ANSI_CLEAR_SCREEN);
     printf("%s", ANSI_CURSOR_HOME);
@@ -129,13 +129,13 @@ void printBoard(GameState *game) {
     }
     printf("\n");
 
-    for(unsigned int i = 0; i < player_count; i++) {
+    for(unsigned int i = 0; i < playerCount; i++) {
         printf(ANSI_BOLD_WHITE);
         printf(MARGIN_TAB);
         printf("Player %s%d%s score: %d", colorMap[i], i, ANSI_BOLD_WHITE, game->players[i].points);
         printf(ANSI_COLOR_RESET);
         printf(" - ");
-        printf("%d Invalid movements", game->players[i].invalid_movements);
+        printf("%d Invalid movements", game->players[i].invalidMovements);
         printf(ANSI_COLOR_RESET);
         if (game->players[i].blocked){
             printf(ANSI_COLOR_RED);
@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
     ViewMemory *vm = initViewMemory(width, height, &game, &sync);
     
     // Main loop: wait for master to signal changes and print the board
-    while (!game->game_over) {
+    while (!game->gameOver) {
         sem_wait(&sync->printNeeded);  // Wait for master to signal changes
         printBoard(game);
         sem_post(&sync->printDone);    // Signal master that printing is done

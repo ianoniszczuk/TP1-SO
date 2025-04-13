@@ -21,8 +21,8 @@ GameStateAdt initGameState(size_t board_size, Options *options) {
     // Initialize the game state
     gameStateAdt.state->width = options->width;
     gameStateAdt.state->height = options->height;
-    gameStateAdt.state->player_count = options->num_players;
-    gameStateAdt.state->game_over = false;
+    gameStateAdt.state->playerCount = options->numPlayers;
+    gameStateAdt.state->gameOver = false;
 
     srand(options->seed);
     for (int i = 0; i < options->width * options->height; i++) {

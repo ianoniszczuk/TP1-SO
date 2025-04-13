@@ -8,8 +8,8 @@
 typedef struct {
     char name[16];
     unsigned int points;
-    unsigned int invalid_movements;
-    unsigned int valid_movements;
+    unsigned int invalidMovements;
+    unsigned int validMovements;
     unsigned short x, y;
     pid_t pid;
     bool blocked;
@@ -19,9 +19,9 @@ typedef struct {
 typedef struct {
     unsigned short width;
     unsigned short height;
-    unsigned int player_count;
+    unsigned int playerCount;
     Player players[9];
-    bool game_over;
+    bool gameOver;
     int board[];  // Tablero dinámico: fila-0, fila-1, ..., fila-(height-1)
 } GameState;
 

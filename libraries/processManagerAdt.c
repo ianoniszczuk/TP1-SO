@@ -12,16 +12,14 @@ ProcessManagerAdt initProcessManager(int numPlayers) {
     // Allocate memory for pipes
     pm.pipes = malloc(numPlayers * sizeof(int[2]));
     if (!pm.pipes) {
-        perror("Error allocating memory for pipes");
-        exit(EXIT_FAILURE);
+        ERROR_EXIT("Error allocating memory for pipes");
     }
     
     // Allocate memory for player PIDs
     pm.playerPids = malloc(numPlayers * sizeof(pid_t));
     if (!pm.playerPids) {
-        perror("Error allocating memory for player PIDs");
         free(pm.pipes);
-        exit(EXIT_FAILURE);
+        ERROR_EXIT("Error allocating memory for player PIDs");
     }
     
     pm.numPlayers = numPlayers;
@@ -34,9 +32,8 @@ ProcessManagerAdt initProcessManager(int numPlayers) {
 void createPipes(ProcessManagerAdt *pm) {
     for (int i = 0; i < pm->numPlayers; i++) {
         if (pipe(pm->pipes[i]) == -1) {
-            perror("Error creating pipes");
             cleanupProcessManager(pm);
-            exit(EXIT_FAILURE);
+            ERROR_EXIT("Error creating pipes");
         }
     }
 }
@@ -48,9 +45,8 @@ void createProcesses(ProcessManagerAdt *pm, char *viewPath, char *playerPaths[],
     // Create dynamically allocated copies of arguments - argv[0] should be program name
     char **args = malloc(4 * sizeof(char *));
     if (!args) {
-        perror("Error allocating memory for args");
         cleanupProcessManager(pm);
-        exit(EXIT_FAILURE);
+        ERROR_EXIT("Error allocating memory for args");
     }
     
     // For the view
@@ -61,28 +57,26 @@ void createProcesses(ProcessManagerAdt *pm, char *viewPath, char *playerPaths[],
         args[3] = NULL;              // NULL terminator
         
         if (!args[0] || !args[1] || !args[2]) {
-            perror("Error duplicating view argument strings");
+            
             for (int i = 0; i < 3; i++)
                 if (args[i]) free(args[i]);
             free(args);
             cleanupProcessManager(pm);
-            exit(EXIT_FAILURE);
+            ERROR_EXIT("Error duplicating view argument strings");
         }
 
         pid = fork();
         if (pid == -1) {
-            perror("Error en fork");
             for (int i = 0; i < 3; i++)
                 if (args[i]) free(args[i]);
             free(args);
             cleanupProcessManager(pm);
-            exit(EXIT_FAILURE);
+            perror("Error in fork");
         }
         else if (pid == 0) {
             // Child process will call execve, so we don't need to free in this branch
             execve(viewPath, args, NULL);
-            perror("Error en execve (view)");
-            exit(EXIT_FAILURE); // Using exit directly as we're in the child
+            ERROR_EXIT("Error en execve (view)");
         }
         
         // Store view process ID
@@ -102,22 +96,20 @@ void createProcesses(ProcessManagerAdt *pm, char *viewPath, char *playerPaths[],
         args[3] = NULL;                   // NULL terminator
         
         if (!args[0] || !args[1] || !args[2]) {
-            perror("Error duplicating player argument strings");
             for (int i = 0; i < 3; i++)
                 if (args[i]) free(args[i]);
             free(args);
             cleanupProcessManager(pm);
-            exit(EXIT_FAILURE);
+            ERROR_EXIT("Error duplicating player argument strings");
         }
 
         pid = fork();
         if (pid == -1) {
-            perror("Error en fork");
             for (int i = 0; i < 3; i++)
                 if (args[i]) free(args[i]);
             free(args);
             cleanupProcessManager(pm);
-            exit(EXIT_FAILURE);
+            ERROR_EXIT("Error en fork");
         }
         else if (pid == 0) {
             // Close unused pipe ends in child
@@ -129,13 +121,11 @@ void createProcesses(ProcessManagerAdt *pm, char *viewPath, char *playerPaths[],
             }
 
             if (dup2(pm->pipes[i][1], STDOUT_FILENO) == -1) {
-                perror("Error en dup2");
-                exit(EXIT_FAILURE);
+                ERROR_EXIT("Error in dup2");
             }
 
             execve(playerPaths[i], args, NULL);
-            perror("Error en execve (player)");
-            exit(EXIT_FAILURE); // Using exit directly as we're in the child
+            ERROR_EXIT("Error en execve (player)");
         } else {
             close(pm->pipes[i][1]);
             pm->playerPids[i] = pid;

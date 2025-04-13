@@ -47,17 +47,14 @@ int main(int argc, char *argv[]) {
     gGameSyncAdt = initGameSync();
 
     // Initialize process manager and create processes
-    ProcessManagerAdt processManager = initProcessManager(options.num_players);
+    ProcessManagerAdt processManager = initProcessManager(options.numPlayers);
     createPipes(&processManager);
-    createProcesses(&processManager, options.view_path, options.player_paths, 
+    createProcesses(&processManager, options.viewPath, options.playerPaths, 
                    gGameStateAdt.state, argParser.argWidth, argParser.argHeight);
     
-    // Free dynamic argument strings
-    cleanupArgParser(&argParser);
-
     // Initialize game logic and run the game
     GameLogicAdt gameLogic = initGameLogic(gGameStateAdt.state, gGameSyncAdt.sync, 
-                                          options.timeout_sec, options.delay_ms);
+                                          options.timeoutSec, options.delayMs);
     distributePlayers(&gameLogic);
     printOptions(&options);
     

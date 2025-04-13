@@ -8,12 +8,12 @@
 typedef struct {
     unsigned short width;
     unsigned short height;
-    int delay_ms;
-    int timeout_sec;
+    int delayMs;
+    int timeoutSec;
     unsigned int seed;
-    char *view_path;
-    int num_players;
-    char *player_paths[MAX_PLAYERS];
+    char *viewPath;
+    int numPlayers;
+    char *playerPaths[MAX_PLAYERS];
 } Options;
 
 /**
