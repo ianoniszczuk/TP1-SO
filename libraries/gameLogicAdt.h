@@ -3,6 +3,7 @@
 
 #include "sharedHeaders.h"
 #include "processManagerAdt.h"
+#include "errorHandling.h"
 #include <stdbool.h>
 
 /**

@@ -86,6 +86,7 @@ int findPlayerNumber(GameState *game) {
  * @return              Boolean indicating if player can continue (false if blocked).
  */
 bool handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber) {
+    // Pre-verificación inicial - permite una salida rápida sin adquirir semáforos
     if (game->players[playerNumber].blocked) {
         return false; // Player is blocked, signal to exit
     }
@@ -99,6 +100,19 @@ bool handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber) {
     }
     sem_post(&sync->readerCountMutex);
     sem_post(&sync->turnstile);
+
+    // Verificar nuevamente si el jugador está bloqueado ahora que tenemos acceso sincronizado
+    // Esto garantiza que tengamos la información más actualizada del estado
+    if (game->players[playerNumber].blocked) {
+        // Liberar los recursos antes de retornar
+        sem_wait(&sync->readerCountMutex);
+        sync->readerCount--;
+        if (sync->readerCount == 0) {
+            sem_post(&sync->resourceAccess);
+        }
+        sem_post(&sync->readerCountMutex);
+        return false; // Player is blocked, signal to exit
+    }
 
     // Generate and send a random movement (0 to 7)
     unsigned char movimiento = (unsigned char)(rand() % 8);

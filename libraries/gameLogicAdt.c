@@ -7,6 +7,11 @@
 #include <sys/time.h>
 
 GameLogicAdt initGameLogic(GameState *state, GameSync *sync, int timeout, int delayMs) {
+    // Validar que el delay (en ms) no sea mayor que el timeout (en segundos)
+    if (delayMs > timeout * 1000) {
+        ERROR_EXIT("delay cannot be greater than timeout!");
+    }
+    
     GameLogicAdt logic;
     logic.state = state;
     logic.sync = sync;
@@ -151,6 +156,7 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
 
                 // Check if any players are blocked
                 for (int k = 0; k < pm->numPlayers; k++) {
+                    bool wasBlocked = logic->state->players[k].blocked;
                     bool blockedFlag = true;
 
                     for (int j = 0; j < 8; j++) {
@@ -165,7 +171,14 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                         }
                     }
 
+                    // Update blocked state
                     logic->state->players[k].blocked = blockedFlag;
+                    
+                    // If player wasn't blocked before but is now, close their pipe
+                    if (blockedFlag && !wasBlocked) {
+                        printf("Player %d has been blocked\n", k);
+                        closePlayerPipe(pm, k);
+                    }
                 }
 
                 // Check if game is over (all players blocked)
@@ -198,9 +211,71 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
 }
 
 void printFinalResults(GameLogicAdt *logic, int returnCodes[]) {
-    for (unsigned int i = 0; i < logic->state->playerCount; i++) {
-        printf("Jugador %d (%d), puntos: %d, movimientos invalidos: %d\n", 
-               i, returnCodes[i], logic->state->players[i].points, 
-               logic->state->players[i].invalidMovements);
+    int playerCount = logic->state->playerCount;
+    int indices[playerCount];
+    
+    // Initialize indices array
+    for (int i = 0; i < playerCount; i++) {
+        indices[i] = i;
     }
+    
+    // Sort players according to criteria
+    for (int i = 0; i < playerCount - 1; i++) {
+        for (int j = 0; j < playerCount - i - 1; j++) {
+            int idx1 = indices[j];
+            int idx2 = indices[j + 1];
+            Player p1 = logic->state->players[idx1];
+            Player p2 = logic->state->players[idx2];
+            
+            // Compare by points (descending)
+            if (p1.points < p2.points) {
+                int temp = indices[j];
+                indices[j] = indices[j + 1];
+                indices[j + 1] = temp;
+            }
+            // If points are equal, compare by valid movements (ascending)
+            else if (p1.points == p2.points && p1.validMovements > p2.validMovements) {
+                int temp = indices[j];
+                indices[j] = indices[j + 1];
+                indices[j + 1] = temp;
+            }
+            // If points and valid movements are equal, compare by invalid movements (ascending)
+            else if (p1.points == p2.points && p1.validMovements == p2.validMovements && 
+                     p1.invalidMovements > p2.invalidMovements) {
+                int temp = indices[j];
+                indices[j] = indices[j + 1];
+                indices[j + 1] = temp;
+            }
+        }
+    }
+    
+    // Print results in order
+    printf("\n===== RESULTADOS FINALES =====\n");
+    
+    // Display ranking with ties
+    int rank = 1;
+    for (int i = 0; i < playerCount; i++) {
+        int idx = indices[i];
+        Player currentPlayer = logic->state->players[idx];
+        
+        // Determine if there's a tie with the previous player
+        if (i > 0) {
+            int prevIdx = indices[i-1];
+            Player prevPlayer = logic->state->players[prevIdx];
+            
+            // Check if previous player has same stats (points, valid moves, invalid moves)
+            if (currentPlayer.points != prevPlayer.points || 
+                currentPlayer.validMovements != prevPlayer.validMovements || 
+                currentPlayer.invalidMovements != prevPlayer.invalidMovements) {
+                rank = i + 1; // Not a tie, set rank to current position + 1
+            }
+            // If all stats are equal, keep the same rank (tie)
+        }
+        
+        printf("Rank %d: Jugador %d, puntos: %d, movimientos válidos: %d, movimientos inválidos: %d\n",
+               rank, idx, currentPlayer.points, currentPlayer.validMovements, 
+               currentPlayer.invalidMovements);
+    }
+    
+    printf("===========================\n");
 } 

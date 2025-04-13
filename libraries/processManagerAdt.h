@@ -59,4 +59,13 @@ void waitForPlayers(ProcessManagerAdt *pm, int returnCodes[]);
  */
 void cleanupProcessManager(ProcessManagerAdt *pm);
 
+/**
+ * Closes the pipe for a specific player
+ * This is used when a player becomes blocked to prevent receiving more input
+ * 
+ * @param pm ProcessManagerAdt structure
+ * @param playerIndex Index of the player whose pipe should be closed
+ */
+void closePlayerPipe(ProcessManagerAdt *pm, int playerIndex);
+
 #endif 

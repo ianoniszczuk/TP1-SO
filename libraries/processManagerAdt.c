@@ -217,4 +217,26 @@ void cleanupProcessManager(ProcessManagerAdt *pm) {
         free(pm->playerPids);
         pm->playerPids = NULL;
     }
+}
+
+/**
+ * Closes the pipe for a specific player.
+ * This is used when a player becomes blocked to stop receiving further moves.
+ * 
+ * @param pm ProcessManagerAdt structure
+ * @param playerIndex Index of the player whose pipe should be closed
+ */
+void closePlayerPipe(ProcessManagerAdt *pm, int playerIndex) {
+    if (!pm || playerIndex < 0 || playerIndex >= pm->numPlayers) {
+        return; // Invalid parameters
+    }
+    
+    // Check if pipe is still open
+    if (pm->pipes[playerIndex][0] > 0) {
+        // Close the read end of the pipe
+        close(pm->pipes[playerIndex][0]);
+        pm->pipes[playerIndex][0] = -1; // Mark as closed
+        
+        printf("Pipe closed for player %d (blocked)\n", playerIndex);
+    }
 } 
