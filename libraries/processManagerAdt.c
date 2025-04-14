@@ -189,7 +189,9 @@ void cleanupProcessManager(ProcessManagerAdt *pm) {
     
     if (pm->pipes) {
         for (int i = 0; i < pm->numPlayers; i++) {
-            close(pm->pipes[i][0]);
+            if (pm->pipes[i][0] > 0) {
+                close(pm->pipes[i][0]);
+            }
         }
         free(pm->pipes);
         pm->pipes = NULL;

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -pedantic -I./libraries
+CFLAGS = -g -Wall -pedantic -I./libraries
 LDFLAGS = -pthread -lrt
 
 SRC_DIR = .
