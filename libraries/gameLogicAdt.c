@@ -238,9 +238,9 @@ void printFinalResults(GameLogicAdt *logic, int returnCodes[]) {
             }
         }
         
-        printf("Rank %d: Jugador %d, puntos: %u, movimientos válidos: %u, movimientos inválidos: %u\n",
+        printf("Rank %d: Jugador %d, puntos: %u, movimientos válidos: %u, movimientos inválidos: %u, código retorno: %d\n",
                rank, idx, currentPlayer.points, currentPlayer.validMovements, 
-               currentPlayer.invalidMovements);
+               currentPlayer.invalidMovements, returnCodes[idx]);
     }
     
     printf("===========================\n");
