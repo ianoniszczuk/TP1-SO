@@ -65,14 +65,19 @@ ArgParserAdt parseArguments(int argc, char *argv[], Options *options) {
         ERROR_EXIT("-p missing to specify players");
     }
 
-    while (optind < argc && options->numPlayers < MAX_PLAYERS) {
+    int errorNumPlayers = 0;
+    while (optind < argc) {
         options->playerPaths[options->numPlayers++] = argv[optind++];
+        if(options->numPlayers > 9) {
+            errorNumPlayers = 1;
+            break;
+        }
     }
 
     if (options->numPlayers < 1) {
         ERROR_EXIT("At least 1 player is needed");
     }
-    if (options->numPlayers > 9) {
+    if (errorNumPlayers) {
         ERROR_EXIT("At most 9 players are allowed");
     }
 
