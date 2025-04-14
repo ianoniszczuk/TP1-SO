@@ -12,9 +12,12 @@
 
 GameStateAdt gGameStateAdt;
 GameSyncAdt gGameSyncAdt;
+ProcessManagerAdt processManager;
+
 int processReturn[MAX_PLAYERS];
 
 void cleanAndEnd(int sig, int exitCode) {
+    cleanupProcessManager(&processManager);
     cleanupGameSync(&gGameSyncAdt);
     cleanupGameState(&gGameStateAdt);
     exit(exitCode);
@@ -34,7 +37,7 @@ int main(int argc, char *argv[]) {
     gGameStateAdt = initGameState(boardSize, &options);
     gGameSyncAdt = initGameSync();
 
-    ProcessManagerAdt processManager = initProcessManager(options.numPlayers);
+    processManager = initProcessManager(options.numPlayers);
     createPipes(&processManager);
     createProcesses(&processManager, options.viewPath, options.playerPaths, 
                    gGameStateAdt.state, argParser.argWidth, argParser.argHeight);
