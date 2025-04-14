@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     GameSync *sync = NULL;
     int playerNumber;
 
-    srand(time(NULL));
+    srand(time(NULL) ^ getpid());
 
     PlayerMemory *pm = initPlayerMemory(width, height, &game, &sync);
 
