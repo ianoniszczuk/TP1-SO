@@ -132,7 +132,7 @@ void printBoard(GameState *game) {
     for(unsigned int i = 0; i < playerCount; i++) {
         printf(ANSI_BOLD_WHITE);
         printf(MARGIN_TAB);
-        printf("Player %s%d%s score: %u", colorMap[i], i, ANSI_BOLD_WHITE, game->players[i].points);
+        printf("Player %s%u%s score: %u", colorMap[i], i, ANSI_BOLD_WHITE, game->players[i].points);
         printf(ANSI_COLOR_RESET);
         printf(" - ");
         printf("%u Invalid movements", game->players[i].invalidMovements);
