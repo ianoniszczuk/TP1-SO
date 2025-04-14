@@ -9,10 +9,13 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <signal.h>
 
 //Definiciones
 int puntajes[9];
 bool flag = false;
+ViewMemory *gViewMemory = NULL;
+volatile sig_atomic_t receivedSignal = 0;
 
 const char *colorMap[] = {
     ANSI_COLOR_WHITE,
@@ -25,6 +28,23 @@ const char *colorMap[] = {
     ANSI_COLOR_YELLOW,
     ANSI_COLOR_BLACK
 };
+
+void cleanupAndExit(int sig, int exitCode) {
+    if (gViewMemory != NULL) {
+        cleanupViewMemory(gViewMemory);
+    }
+    
+    if (sig != 0) {
+        fprintf(stderr, "View process terminated by signal %d\n", sig);
+    }
+    
+    exit(exitCode);
+}
+
+void signalHandler(int sig) {
+    receivedSignal = 1;
+    cleanupAndExit(sig, EXIT_FAILURE);
+}
 
 ViewMemory *initViewMemory(int width, int height, GameState **game, GameSync **sync) {
     ViewMemory *vm = malloc(sizeof(ViewMemory));
@@ -125,19 +145,26 @@ void printBoard(GameState *game) {
 }
 
 int main(int argc, char* argv[]) {
+    // Registramos manejadores para señales
+    signal(SIGINT, signalHandler);
+    signal(SIGTERM, signalHandler);
+    signal(SIGQUIT, signalHandler);
+    
     int width = atoi(argv[0]);
     int height = atoi(argv[1]);
     GameState *game = NULL;
     GameSync *sync = NULL;
 
-    ViewMemory *vm = initViewMemory(width, height, &game, &sync);
+    gViewMemory = initViewMemory(width, height, &game, &sync);
     
-    while (!game->gameOver) {
+    while (!game->gameOver && !receivedSignal) {
         sem_wait(&sync->printNeeded); 
         printBoard(game);
         sem_post(&sync->printDone);    
     }
 
-    cleanupViewMemory(vm);
+    cleanupViewMemory(gViewMemory);
+    gViewMemory = NULL;
+    
     return EXIT_SUCCESS;
 }
