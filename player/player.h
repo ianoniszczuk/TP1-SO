@@ -13,13 +13,13 @@
 #include "../libraries/errorHandling.h"
 
 typedef struct {
-    SharedMemoryAdt gameAdt;   // Mapping for game_state (read-only)
-    SharedMemoryAdt syncAdt;   // Mapping for game_sync (read-write)
+    SharedMemoryAdt gameAdt;  
+    SharedMemoryAdt syncAdt;  
 } PlayerMemory;
 
 PlayerMemory *initPlayerMemory(int width, int height, GameState **game, GameSync **sync);
 void cleanupPlayerMemory(PlayerMemory *pm);
 int findPlayerNumber(GameState *game);
-bool handlePlayerTurn(GameState *game, GameSync *sync, int player_number);
+bool handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber);
 
 #endif

@@ -10,10 +10,6 @@
 #include <unistd.h>
 #include <semaphore.h>
 
-// Names for the shared memory segments
-#define GAME_STATE "/game_state"
-#define GAME_SYNC  "/game_sync"
-
 //Definiciones
 int puntajes[9];
 bool flag = false;
@@ -30,21 +26,6 @@ const char *colorMap[] = {
     ANSI_COLOR_BLACK
 };
 
-/* Structure that groups the shared memory segments used by the view. */
-typedef struct {
-    SharedMemoryAdt gameAdt;   // Mapping for game_state (read-only)
-    SharedMemoryAdt syncAdt;   // Mapping for game_sync (read-write)
-} ViewMemory;
-
-/**
- * initViewMemory - Initializes the shared memory segments for the view.
- *
- * @param width  Board width.
- * @param height Board height.
- * @param game   Output: pointer to the GameState structure.
- * @param sync   Output: pointer to the GameSync structure.
- * @return       Pointer to a ViewMemory structure grouping the used ADT objects.
- */
 ViewMemory *initViewMemory(int width, int height, GameState **game, GameSync **sync) {
     ViewMemory *vm = malloc(sizeof(ViewMemory));
     if (!vm) {
@@ -61,11 +42,6 @@ ViewMemory *initViewMemory(int width, int height, GameState **game, GameSync **s
     return vm;
 }
 
-/**
- * cleanupViewMemory - Frees the resources associated with the shared memory segments.
- *
- * @param vm Pointer to the ViewMemory structure.
- */
 void cleanupViewMemory(ViewMemory *vm) {
     if (vm) {
         shmAdtClose(&vm->gameAdt);
@@ -154,17 +130,14 @@ int main(int argc, char* argv[]) {
     GameState *game = NULL;
     GameSync *sync = NULL;
 
-    // Initialize shared memory using our ADT encapsulation
     ViewMemory *vm = initViewMemory(width, height, &game, &sync);
     
-    // Main loop: wait for master to signal changes and print the board
     while (!game->gameOver) {
-        sem_wait(&sync->printNeeded);  // Wait for master to signal changes
+        sem_wait(&sync->printNeeded); 
         printBoard(game);
-        sem_post(&sync->printDone);    // Signal master that printing is done
+        sem_post(&sync->printDone);    
     }
 
-    // Clean up resources
     cleanupViewMemory(vm);
     return EXIT_SUCCESS;
 }

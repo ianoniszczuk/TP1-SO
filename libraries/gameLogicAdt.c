@@ -6,12 +6,7 @@
 #include <semaphore.h>
 #include <sys/time.h>
 
-GameLogicAdt initGameLogic(GameState *state, GameSync *sync, int timeout, int delayMs) {
-    // Validar que el delay (en ms) no sea mayor que el timeout (en segundos)
-    if (delayMs > timeout * 1000) {
-        ERROR_EXIT("delay cannot be greater than timeout!");
-    }
-    
+GameLogicAdt initGameLogic(GameState *state, GameSync *sync, int timeout, int delayMs) {    
     GameLogicAdt logic;
     logic.state = state;
     logic.sync = sync;
@@ -22,50 +17,38 @@ GameLogicAdt initGameLogic(GameState *state, GameSync *sync, int timeout, int de
 
 void distributePlayers(GameLogicAdt *logic) {
     for (unsigned int i = 0; i < logic->state->playerCount; i++) {
-        // Generate random positions until an unoccupied position is found
         int x, y, cellIndex;
         do {
             x = rand() % logic->state->width;
             y = rand() % logic->state->height;
             cellIndex = y * logic->state->width + x;
-            
-            // Check if cell is already occupied by a player or has an invalid value
-            // logic->state->board[cellIndex] <= 0 means it's already occupied by a player
-        } while (logic->state->board[cellIndex] <= 0); // Check if cell is already occupied
+        } while (logic->state->board[cellIndex] <= 0); 
         
         logic->state->players[i].x = x;
         logic->state->players[i].y = y;
-        logic->state->players[i].points = 0; // Initial points set to 0, initial cell doesn't count
+        logic->state->players[i].points = 0;
         logic->state->players[i].invalidMovements = 0;
         logic->state->players[i].validMovements = 0;
         logic->state->players[i].blocked = false;
         
-        // Mark the cell as occupied by this player without adding its value to the score
         logic->state->board[cellIndex] = -i;
-    }
-    
-    // Ensure all players start with zero points (initial cell doesn't count)
-    for (unsigned int i = 0; i < logic->state->playerCount; i++) {
-        logic->state->players[i].points = 0;
     }
 }
 
 void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
-    struct timeval tv;
     fd_set rfds;
     int maxFd = 0;
     int currentPlayer = 0;
-    time_t lastMoveAttemptTime = time(NULL);  // Time of last move attempt
+    time_t lastMoveAttemptTime = time(NULL);
+    struct timeval tv;
     
     int dx[8] = {0, 1, 1, 1, 0, -1, -1, -1};
     int dy[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 
     while (!logic->state->gameOver) {
-        // Check if game is taking too long (handles player infinite loops)
         time_t currentTime = time(NULL);
         double timeSinceLastMove = difftime(currentTime, lastMoveAttemptTime);
         
-        // If we've received activity but no valid moves for too long, trigger timeout
         if (timeSinceLastMove > logic->timeout) {
             sem_wait(&logic->sync->turnstile);
             sem_wait(&logic->sync->resourceAccess);
@@ -92,9 +75,8 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             } 
         }
 
-        // Use a shorter timeout for select to check for timeout condition more frequently
-        tv.tv_sec = 0;
-        tv.tv_usec = 500000; // 500ms
+        tv.tv_sec = logic->timeout;
+        tv.tv_usec = 0;
 
         int activity = select(maxFd + 1, &rfds, NULL, NULL, &tv);
 
@@ -102,13 +84,7 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             perror("select");
             break;
         }
-
-        if (activity == 0) {
-            // No activity detected, continue to check timeout
-            continue;
-        }
         
-        // Update the last attempt time whenever we detect activity
         lastMoveAttemptTime = currentTime;
         
         for (int i = 0; i < pm->numPlayers; i++) { 
@@ -128,16 +104,15 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                     update = false;
                 }
 
-                // Ensure move is within valid range
                 if (bytes > 0 && move > 7) {
-                    move = move % 8;  // Clamp to valid range 0-7
+                    // advoid malicious attempt of player
+                    move = move % 8; 
                 }
 
                 int newX = logic->state->players[idx].x + dx[move];
                 int newY = logic->state->players[idx].y + dy[move];
                 int cellIndex = newY * logic->state->width + newX;
 
-                // Check for invalid movement conditions
                 if (newX < 0 || newX >= logic->state->width || newY < 0 || newY >= logic->state->height) {
                     logic->state->players[idx].invalidMovements++;
                     update = false;
@@ -154,7 +129,6 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                     logic->state->board[cellIndex] = -(idx);
                 }
 
-                // Check if any players are blocked
                 for (int k = 0; k < pm->numPlayers; k++) {
                     bool wasBlocked = logic->state->players[k].blocked;
                     bool blockedFlag = true;
@@ -171,17 +145,14 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                         }
                     }
 
-                    // Update blocked state
                     logic->state->players[k].blocked = blockedFlag;
                     
-                    // If player wasn't blocked before but is now, close their pipe
                     if (blockedFlag && !wasBlocked) {
                         printf("Player %d has been blocked\n", k);
                         closePlayerPipe(pm, k);
                     }
                 }
 
-                // Check if game is over (all players blocked)
                 logic->state->gameOver = true;
                 for (int i = 0; i < pm->numPlayers; i++) {
                     if (!logic->state->players[i].blocked) {
@@ -195,8 +166,8 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
 
                 currentPlayer = (idx + 1) % pm->numPlayers;
 
-                sem_post(&logic->sync->printNeeded); // Signal view to update display
-                sem_wait(&logic->sync->printDone);   // Wait for view to finish
+                sem_post(&logic->sync->printNeeded);
+                sem_wait(&logic->sync->printDone);  
 
                 usleep(logic->delayMs * 1000);
 
@@ -214,12 +185,10 @@ void printFinalResults(GameLogicAdt *logic, int returnCodes[]) {
     int playerCount = logic->state->playerCount;
     int indices[playerCount];
     
-    // Initialize indices array
     for (int i = 0; i < playerCount; i++) {
         indices[i] = i;
     }
     
-    // Sort players according to criteria
     for (int i = 0; i < playerCount - 1; i++) {
         for (int j = 0; j < playerCount - i - 1; j++) {
             int idx1 = indices[j];
@@ -227,20 +196,15 @@ void printFinalResults(GameLogicAdt *logic, int returnCodes[]) {
             Player p1 = logic->state->players[idx1];
             Player p2 = logic->state->players[idx2];
             
-            // Compare by points (descending)
             if (p1.points < p2.points) {
                 int temp = indices[j];
                 indices[j] = indices[j + 1];
                 indices[j + 1] = temp;
-            }
-            // If points are equal, compare by valid movements (ascending)
-            else if (p1.points == p2.points && p1.validMovements > p2.validMovements) {
+            } else if (p1.points == p2.points && p1.validMovements > p2.validMovements) {
                 int temp = indices[j];
                 indices[j] = indices[j + 1];
                 indices[j + 1] = temp;
-            }
-            // If points and valid movements are equal, compare by invalid movements (ascending)
-            else if (p1.points == p2.points && p1.validMovements == p2.validMovements && 
+            } else if (p1.points == p2.points && p1.validMovements == p2.validMovements && 
                      p1.invalidMovements > p2.invalidMovements) {
                 int temp = indices[j];
                 indices[j] = indices[j + 1];
@@ -249,27 +213,22 @@ void printFinalResults(GameLogicAdt *logic, int returnCodes[]) {
         }
     }
     
-    // Print results in order
     printf("\n===== RESULTADOS FINALES =====\n");
     
-    // Display ranking with ties
     int rank = 1;
     for (int i = 0; i < playerCount; i++) {
         int idx = indices[i];
         Player currentPlayer = logic->state->players[idx];
         
-        // Determine if there's a tie with the previous player
         if (i > 0) {
             int prevIdx = indices[i-1];
             Player prevPlayer = logic->state->players[prevIdx];
             
-            // Check if previous player has same stats (points, valid moves, invalid moves)
             if (currentPlayer.points != prevPlayer.points || 
                 currentPlayer.validMovements != prevPlayer.validMovements || 
                 currentPlayer.invalidMovements != prevPlayer.invalidMovements) {
-                rank = i + 1; // Not a tie, set rank to current position + 1
+                rank = i + 1;
             }
-            // If all stats are equal, keep the same rank (tie)
         }
         
         printf("Rank %d: Jugador %d, puntos: %u, movimientos válidos: %u, movimientos inválidos: %u\n",

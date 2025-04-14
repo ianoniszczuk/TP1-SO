@@ -7,8 +7,6 @@
 #include <string.h>
 
 /**
- * Helper function to create argument arrays
- * 
  * @param programPath Program path to use as first argument
  * @param argWidth Width argument as string
  * @param argHeight Height argument as string
@@ -37,8 +35,6 @@ static char** createArgs(const char *programPath, const char *argWidth, const ch
 }
 
 /**
- * Helper function to free argument arrays
- * 
  * @param args Argument array to free
  */
 static void freeArgs(char **args) {
@@ -53,13 +49,11 @@ static void freeArgs(char **args) {
 ProcessManagerAdt initProcessManager(int numPlayers) {
     ProcessManagerAdt pm;
     
-    // Allocate memory for pipes
     pm.pipes = malloc(numPlayers * sizeof(int[2]));
     if (!pm.pipes) {
         ERROR_EXIT("Error allocating memory for pipes");
     }
     
-    // Allocate memory for player PIDs
     pm.playerPids = malloc(numPlayers * sizeof(pid_t));
     if (!pm.playerPids) {
         free(pm.pipes);
@@ -83,8 +77,6 @@ void createPipes(ProcessManagerAdt *pm) {
 }
 
 /**
- * Helper function to create a view process
- * 
  * @param pm Process manager
  * @param viewPath Path to view executable
  * @param argWidth Width argument as string
@@ -93,7 +85,7 @@ void createPipes(ProcessManagerAdt *pm) {
  */
 static bool createViewProcess(ProcessManagerAdt *pm, char *viewPath, char *argWidth, char *argHeight) {
     if (viewPath == NULL) {
-        return true;  // No view to create, not an error
+        return true; 
     }
     
     char **args = createArgs(viewPath, argWidth, argHeight);
@@ -106,12 +98,10 @@ static bool createViewProcess(ProcessManagerAdt *pm, char *viewPath, char *argWi
         freeArgs(args);
         return false;
     } else if (pid == 0) {
-        // Child process
         execve(viewPath, args, NULL);
         ERROR_EXIT("Error in execve (view)");
     }
     
-    // Parent process
     pm->viewPid = pid;
     pm->hasView = true;
     freeArgs(args);
@@ -119,8 +109,6 @@ static bool createViewProcess(ProcessManagerAdt *pm, char *viewPath, char *argWi
 }
 
 /**
- * Helper function to create a player process
- * 
  * @param pm Process manager
  * @param state Game state to update with player PID
  * @param playerPath Path to player executable
@@ -141,7 +129,6 @@ static bool createPlayerProcess(ProcessManagerAdt *pm, GameState *state, char *p
         freeArgs(args);
         return false;
     } else if (pid == 0) {
-        // Child process - close unused pipe ends
         for (int j = 0; j < pm->numPlayers; j++) {
             close(pm->pipes[j][0]);
             if (playerIndex != j) {
@@ -157,7 +144,6 @@ static bool createPlayerProcess(ProcessManagerAdt *pm, GameState *state, char *p
         ERROR_EXIT("Error in execve (player)");
     }
     
-    // Parent process
     close(pm->pipes[playerIndex][1]);
     pm->playerPids[playerIndex] = pid;
     state->players[playerIndex].pid = pid;
@@ -167,7 +153,6 @@ static bool createPlayerProcess(ProcessManagerAdt *pm, GameState *state, char *p
 
 void createProcesses(ProcessManagerAdt *pm, char *viewPath, char *playerPaths[], 
                      GameState *state, char *argWidth, char *argHeight) {
-    // Create view process if specified
     if (viewPath != NULL) {
         if (!createViewProcess(pm, viewPath, argWidth, argHeight)) {
             cleanupProcessManager(pm);
@@ -175,7 +160,6 @@ void createProcesses(ProcessManagerAdt *pm, char *viewPath, char *playerPaths[],
         }
     }
     
-    // Create player processes
     for (int i = 0; i < pm->numPlayers; i++) {
         if (!createPlayerProcess(pm, state, playerPaths[i], argWidth, argHeight, i)) {
             cleanupProcessManager(pm);
@@ -203,16 +187,14 @@ void cleanupProcessManager(ProcessManagerAdt *pm) {
         return;
     }
     
-    // Close all open pipes
     if (pm->pipes) {
         for (int i = 0; i < pm->numPlayers; i++) {
-            close(pm->pipes[i][0]); // Close read end
+            close(pm->pipes[i][0]);
         }
         free(pm->pipes);
         pm->pipes = NULL;
     }
     
-    // Free player PIDs array
     if (pm->playerPids) {
         free(pm->playerPids);
         pm->playerPids = NULL;
@@ -220,22 +202,17 @@ void cleanupProcessManager(ProcessManagerAdt *pm) {
 }
 
 /**
- * Closes the pipe for a specific player.
- * This is used when a player becomes blocked to stop receiving further moves.
- * 
  * @param pm ProcessManagerAdt structure
  * @param playerIndex Index of the player whose pipe should be closed
  */
 void closePlayerPipe(ProcessManagerAdt *pm, int playerIndex) {
     if (!pm || playerIndex < 0 || playerIndex >= pm->numPlayers) {
-        return; // Invalid parameters
+        return;
     }
     
-    // Check if pipe is still open
     if (pm->pipes[playerIndex][0] > 0) {
-        // Close the read end of the pipe
         close(pm->pipes[playerIndex][0]);
-        pm->pipes[playerIndex][0] = -1; // Mark as closed
+        pm->pipes[playerIndex][0] = -1;
         
         printf("Pipe closed for player %d (blocked)\n", playerIndex);
     }

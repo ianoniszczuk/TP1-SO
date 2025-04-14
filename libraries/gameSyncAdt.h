@@ -5,11 +5,18 @@
 #include "sharedMemoryAdt.h"
 
 typedef struct {
-    GameSync *sync;
-    SharedMemoryAdt shm;  // Store the SharedMemoryAdt to properly free resources
+    GameSync *sync;       
+    SharedMemoryAdt shm;   
 } GameSyncAdt;
 
+/**
+ * @return GameSyncAdt structure
+ */
 GameSyncAdt initGameSync();
+
+/**
+ * @param gameSyncAdt Pointer to GameSyncAdt structure
+ */
 void cleanupGameSync(GameSyncAdt *gameSyncAdt);
 
 #endif

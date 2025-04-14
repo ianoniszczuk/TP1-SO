@@ -4,16 +4,16 @@
 #include "gameConfig.h"
 #include "sharedHeaders.h"
 #include "gameLogicAdt.h"
-#include <stdio.h>      // For printf, fprintf, stderr
-#include <stdlib.h>     // For exit, EXIT_FAILURE, srand, rand
-#include <stddef.h>     // For NULL
-#include <signal.h>     // For signal, SIGINT
-#include <unistd.h>     // For getopt, optarg, optind, sleep, usleep, fork, execve, close
-#include <fcntl.h>      // For O_RDWR, O_CREAT
-#include <sys/mman.h>   // For mmap, munmap, PROT_READ, PROT_WRITE, MAP_SHARED, MAP_FAILED
-#include <sys/types.h>  // For pid_t
-#include <sys/wait.h>   // For waitpid, WIFEXITED, WEXITSTATUS
-#include <time.h>       // For time, difftime
+#include <stdio.h>    
+#include <stdlib.h>    
+#include <stddef.h>    
+#include <signal.h>     
+#include <unistd.h>     
+#include <fcntl.h>     
+#include <sys/mman.h>   
+#include <sys/types.h>  
+#include <sys/wait.h>   
+#include <time.h>       
 
 void print_options(Options *options);
 void init_shared_memory(GameState **state, size_t board_size, Options *options);

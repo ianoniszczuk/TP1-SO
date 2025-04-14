@@ -61,34 +61,37 @@ ArgParserAdt parseArguments(int argc, char *argv[], Options *options) {
         }
     }
 
-    // Validate players
     if (!playersFlag) {
-        ERROR_EXIT("Falta la opción -p para especificar los jugadores");
+        ERROR_EXIT("-p missing to specify players");
     }
 
-    // Parse player paths
     while (optind < argc && options->numPlayers < MAX_PLAYERS) {
         options->playerPaths[options->numPlayers++] = argv[optind++];
     }
 
     if (options->numPlayers < 1) {
-        ERROR_EXIT("Se debe proporcionar al menos 1 jugador");
+        ERROR_EXIT("At least 1 player is needed");
+    }
+    if (options->numPlayers > 9) {
+        ERROR_EXIT("At most 9 players are allowed");
     }
 
-    // Set seed if not specified
+    if (options->delayMs > options->timeoutSec * 1000) {
+        ERROR_EXIT("delay cannot be greater than timeout!");
+    }
+
     if (options->seed == 0) {
         options->seed = (unsigned int)time(NULL);
     }
 
-    // Use numeric values directly for width/height if not provided
     if (parser.argWidth == NULL) {
-        static char widthStr[20];
+        static char widthStr[MAX_DIMENSIONS_LEN];
         sprintf(widthStr, "%d", options->width);
         parser.argWidth = widthStr;
     }
 
     if (parser.argHeight == NULL) {
-        static char heightStr[20];
+        static char heightStr[MAX_DIMENSIONS_LEN];
         sprintf(heightStr, "%d", options->height);
         parser.argHeight = heightStr;
     }

@@ -8,10 +8,6 @@
 #include <unistd.h>
 #include <string.h>
 
-/*
- * Internal function that performs the shared memory mapping.
- * It checks if O_CREAT is set (createFlag) and if O_RDWR is used (writeFlag) to select the appropriate protection.
- */
 static void *mapSharedMemory(const char *name, size_t size, int *fd, int flags) {
     int createFlag = (flags & O_CREAT) ? 1 : 0;
     int writeFlag = (flags & O_RDWR) ? 1 : 0;

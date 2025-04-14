@@ -1,11 +1,6 @@
 #include "gameConfig.h"
 #include <stdio.h>
 
-/**
- * Prints the game options to stdout.
- * 
- * @param options Pointer to the Options structure to print.
- */
 void printOptions(Options *options) {
     printf("width: %d\n", options->width);
     printf("height: %d\n", options->height);

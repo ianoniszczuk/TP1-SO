@@ -10,6 +10,7 @@
 #include <semaphore.h>
 #include <time.h>
 #include "../libraries/sharedHeaders.h"
+#include "../libraries/sharedMemoryAdt.h"
 
 #define CELL_SIZE 3 
 
@@ -40,5 +41,50 @@
 #define ANSI_CLEAR_SCREEN  "\x1b[2J"
 #define ANSI_CURSOR_HOME   "\x1b[H"
 #define ANSI_COLOR_RESET   "\x1b[0m"
+
+#define GAME_STATE "/game_state"
+#define GAME_SYNC  "/game_sync"
+
+typedef struct {
+    SharedMemoryAdt gameAdt;   
+    SharedMemoryAdt syncAdt;   
+} ViewMemory;
+
+/**
+ * @param width  Board width.
+ * @param height Board height.
+ * @param game   Output: pointer to the GameState structure.
+ * @param sync   Output: pointer to the GameSync structure.
+ * @return       Pointer to a ViewMemory structure grouping the used ADT objects.
+ */
+ViewMemory *initViewMemory(int width, int height, GameState **game, GameSync **sync);
+
+/**
+ * @param vm Pointer to the ViewMemory structure.
+ */
+void cleanupViewMemory(ViewMemory *vm);
+
+/**
+ * @param game  Pointer to the GameState structure.
+ * @param value Cell value.
+ * @param x     X coordinate.
+ * @param y     Y coordinate.
+ * @return      True if the cell contains a player's head, false otherwise.
+ */
+int isHead(GameState *game, int value, int x, int y);
+
+/**
+ * @param value Value of the cell.
+ * @param py    Y position within the cell.
+ * @param x     X coordinate of the cell.
+ * @param y     Y coordinate of the cell.
+ * @param game  Pointer to the GameState structure.
+ */
+void printCellRow(int value, int py, int x, int y, GameState *game);
+
+/**
+ * @param game Pointer to the GameState structure.
+ */
+void printBoard(GameState *game);
 
 #endif

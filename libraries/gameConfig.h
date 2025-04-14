@@ -17,8 +17,6 @@ typedef struct {
 } Options;
 
 /**
- * Prints the game options to stdout.
- * 
  * @param options Pointer to the Options structure to print.
  */
 void printOptions(Options *options);

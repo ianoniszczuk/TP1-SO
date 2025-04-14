@@ -4,17 +4,14 @@
 #include "gameConfig.h"
 #include <stdbool.h>
 
-/**
- * Structure to manage command line argument parsing
- */
+#define MAX_DIMENSIONS_LEN 20
+
 typedef struct {
-    char *argWidth;          // Width argument as string
-    char *argHeight;         // Height argument as string
+    char *argWidth;         
+    char *argHeight;        
 } ArgParserAdt;
 
 /**
- * Parses command line arguments
- * 
  * @param argc Number of arguments
  * @param argv Array of argument strings
  * @param options Options structure to populate

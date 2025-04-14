@@ -5,13 +5,23 @@
 #include "gameConfig.h"
 #include "sharedMemoryAdt.h"
 
+
 typedef struct {
-    GameState *state;
-    size_t size;
-    SharedMemoryAdt shm;  // Store the SharedMemoryAdt to properly free resources
+    GameState *state;        
+    size_t size;            
+    SharedMemoryAdt shm;   
 } GameStateAdt;
 
-GameStateAdt initGameState(size_t board_size, Options *options);
+/**
+ * @param board_size Size of the game board in bytes
+ * @param options Pointer to game options
+ * @return GameStateAdt structure
+ */
+GameStateAdt initGameState(size_t boardSize, Options *options);
+
+/**
+ * @param gameStateAdt Pointer to GameStateAdt structure
+ */
 void cleanupGameState(GameStateAdt *gameStateAdt);
 
 #endif
