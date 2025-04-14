@@ -39,17 +39,18 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
     fd_set rfds;
     int maxFd = 0;
     int currentPlayer = 0;
-    time_t lastMoveAttemptTime = time(NULL);
+    time_t lastValidMoveTime = time(NULL);  // Tiempo del último movimiento válido
     struct timeval tv;
     
     int dx[8] = {0, 1, 1, 1, 0, -1, -1, -1};
     int dy[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 
     while (!logic->state->gameOver) {
+        // Verificar timeout al comienzo de cada iteración
         time_t currentTime = time(NULL);
-        double timeSinceLastMove = difftime(currentTime, lastMoveAttemptTime);
+        double timeSinceLastValidMove = difftime(currentTime, lastValidMoveTime);
         
-        if (timeSinceLastMove > logic->timeout) {
+        if (timeSinceLastValidMove > logic->timeout) {
             sem_wait(&logic->sync->turnstile);
             sem_wait(&logic->sync->resourceAccess);
             
@@ -58,7 +59,7 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             sem_post(&logic->sync->printNeeded);
             sem_wait(&logic->sync->printDone);
 
-            printf("Timeout: No player movement detected for %d seconds\n", logic->timeout);
+            printf("Timeout: No valid player movement detected for %d seconds\n", logic->timeout);
 
             sem_post(&logic->sync->resourceAccess);
             sem_post(&logic->sync->turnstile);
@@ -75,8 +76,8 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             } 
         }
 
-        tv.tv_sec = logic->timeout;
-        tv.tv_usec = 0;
+        tv.tv_sec = 0;
+        tv.tv_usec = logic->timeout * 1000; 
 
         int activity = select(maxFd + 1, &rfds, NULL, NULL, &tv);
 
@@ -85,7 +86,10 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
             break;
         }
         
-        lastMoveAttemptTime = currentTime;
+        if (activity == 0) {
+            // No activity detected, continue to next iteration to check timeout
+            continue;
+        }
         
         for (int i = 0; i < pm->numPlayers; i++) { 
             int idx = (currentPlayer + i) % pm->numPlayers;
@@ -127,6 +131,9 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                     logic->state->players[idx].x = newX;
                     logic->state->players[idx].y = newY;
                     logic->state->board[cellIndex] = -(idx);
+                    
+                    // Actualizar el tiempo del último movimiento válido
+                    lastValidMoveTime = currentTime;
                 }
 
                 for (int k = 0; k < pm->numPlayers; k++) {
