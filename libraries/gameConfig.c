@@ -11,7 +11,7 @@ void printOptions(Options *options) {
     printf("height: %d\n", options->height);
     printf("delay: %d\n", options->delayMs);
     printf("timeout: %d\n", options->timeoutSec);
-    printf("seed: %d\n", options->seed);
+    printf("seed: %u\n", options->seed);
     printf("view: %s\n", options->viewPath);
     printf("numPlayers: %d\n", options->numPlayers);
     for (int i = 0; i < options->numPlayers; i++) {

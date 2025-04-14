@@ -13,7 +13,6 @@ ArgParserAdt parseArguments(int argc, char *argv[], Options *options) {
         .argHeight = NULL
     };
 
-    // Default values
     options->width = 10;
     options->height = 10;
     options->delayMs = 200;
@@ -24,7 +23,6 @@ ArgParserAdt parseArguments(int argc, char *argv[], Options *options) {
 
     bool playersFlag = false;
     
-    // Parse command line arguments
     int opt;
     while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p")) != -1) {
         switch (opt) {

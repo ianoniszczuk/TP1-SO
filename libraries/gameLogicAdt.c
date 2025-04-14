@@ -272,7 +272,7 @@ void printFinalResults(GameLogicAdt *logic, int returnCodes[]) {
             // If all stats are equal, keep the same rank (tie)
         }
         
-        printf("Rank %d: Jugador %d, puntos: %d, movimientos válidos: %d, movimientos inválidos: %d\n",
+        printf("Rank %d: Jugador %d, puntos: %u, movimientos válidos: %u, movimientos inválidos: %u\n",
                rank, idx, currentPlayer.points, currentPlayer.validMovements, 
                currentPlayer.invalidMovements);
     }

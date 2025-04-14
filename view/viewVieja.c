@@ -79,7 +79,7 @@ void printBoard(GameState *game) {
     printf("\n");
 
     for(int i = 0; i < playerCount; i++) {
-        printf("Jugador  %d, posicion actual : (%d;%d), puntaje : %d, movs invalidos : %d, bloqueado? %d\n", 
+        printf("Jugador  %d, posicion actual : (%d;%d), puntaje : %u, movs invalidos : %u, bloqueado? %d\n", 
                i, 
                game->players[i].x, 
                game->players[i].y, 
