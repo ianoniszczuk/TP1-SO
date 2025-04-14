@@ -2,15 +2,17 @@
 
 ## Ejecucion en Docker
 
-- Iniciar el container de la materia:
-`docker cp mi_programa <nombre_o_id_del_contenedor>:/root/mi_programa`
-`docker start <CONTAINER ID>`
+### Descargar la imagen
+`docker pull agodio/itba-so-multi-platform:3.0`
 
-- Ejecutar container:
-`docker exec -it <CONTIANER ID> bash`
+### Ejecución del contenedor
+`docker run -v "${PWD}:/root" --privileged -ti agodio/itba-so-multi-platform:3.0`
 
-- Moverse al directorio de guardado:
-`root@id: cd root/mi_programa`
+### Copiar el contenido en el container
+`docker cp TP1-SO <nombre_o_id_del_contenedor>:/root`
 
-- Ejecutar:
+### Ir al directorio de guardado:
+`root@id: cd root/TP1-SO`
+
+### Ejecutar:
 `root@id: ./nombre_ejecutable`
