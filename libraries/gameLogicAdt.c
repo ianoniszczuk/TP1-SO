@@ -108,8 +108,9 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                     update = false;
                 }
 
+                bool invalidMove = 0;
                 if (bytes > 0 && move > 7) {
-                    // advoid malicious attempt of player
+                    invalidMove = 1;
                     move = move % 8; 
                 }
 
@@ -117,7 +118,7 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                 int newY = logic->state->players[idx].y + dy[move];
                 int cellIndex = newY * logic->state->width + newX;
 
-                if (newX < 0 || newX >= logic->state->width || newY < 0 || newY >= logic->state->height) {
+                if (invalidMove || newX < 0 || newX >= logic->state->width || newY < 0 || newY >= logic->state->height) {
                     logic->state->players[idx].invalidMovements++;
                     update = false;
                 } else if (logic->state->board[cellIndex] <= 0) {
@@ -132,7 +133,6 @@ void runGameLoop(GameLogicAdt *logic, ProcessManagerAdt *pm) {
                     logic->state->players[idx].y = newY;
                     logic->state->board[cellIndex] = -(idx);
                     
-                    // Actualizar el tiempo del último movimiento válido
                     lastValidMoveTime = currentTime;
                 }
 
