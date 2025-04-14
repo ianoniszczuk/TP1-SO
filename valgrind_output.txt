@@ -1,9 +1,0 @@
-width: 10
-height: 10
-delay: 400
-timeout: 5
-seed: 1744553341
-view: ./executables/viewVieja
-numPlayers: 2
-	./executables/player
-	./executables/player
