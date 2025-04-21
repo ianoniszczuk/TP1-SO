@@ -20,7 +20,7 @@ PlayerMemory *initPlayerMemory(int width, int height, GameState **game, GameSync
     }
 
     size_t gameTotalSize = sizeof(GameState) + width * height * sizeof(int);
-    pm->gameAdt = shmAdtOpen(GAME_STATE, gameTotalSize, O_RDONLY);
+    pm->gameAdt = shmAdtOpen(GAME_STATE, gameTotalSize, O_RDWR);
     *game = (GameState *) pm->gameAdt.addr;
 
     pm->syncAdt = shmAdtOpen(GAME_SYNC, sizeof(GameSync), O_RDWR);

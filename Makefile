@@ -17,6 +17,8 @@ GAME_CONFIG_SRC = libraries/gameConfig.c
 ARG_PARSER_ADT_SRC = libraries/argParserAdt.c
 PROCESS_MANAGER_ADT_SRC = libraries/processManagerAdt.c
 GAME_LOGIC_ADT_SRC = libraries/gameLogicAdt.c
+WEST_SRC = player/westStrategy.c
+RAND_SRC = player/randStrategy.c
 
 # Object files
 MASTER_OBJ = $(EXEC_DIR)/master.o
@@ -29,6 +31,8 @@ GAME_CONFIG_OBJ = $(EXEC_DIR)/gameConfig.o
 ARG_PARSER_ADT_OBJ = $(EXEC_DIR)/argParserAdt.o
 PROCESS_MANAGER_ADT_OBJ = $(EXEC_DIR)/processManagerAdt.o
 GAME_LOGIC_ADT_OBJ = $(EXEC_DIR)/gameLogicAdt.o
+WEST_OBJ = $(EXEC_DIR)/west.o
+RAND_OBJ = $(EXEC_DIR)/rand.o
 
 # Binary files
 MASTER_BIN = $(EXEC_DIR)/master
@@ -39,6 +43,14 @@ VIEW_BIN = $(EXEC_DIR)/view
 MASTER_ADT_OBJS = $(SHARED_MEMORY_OBJ) $(GAME_STATE_ADT_OBJ) $(GAME_SYNC_ADT_OBJ) \
                  $(GAME_CONFIG_OBJ) $(ARG_PARSER_ADT_OBJ) $(PROCESS_MANAGER_ADT_OBJ) \
                  $(GAME_LOGIC_ADT_OBJ)
+
+pWest: $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ) $(WEST_OBJ)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ) $(WEST_OBJ) -o $(EXEC_DIR)/pWest $(LDFLAGS)
+
+pRand: $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ) $(RAND_OBJ)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(PLAYER_OBJ) $(SHARED_MEMORY_OBJ) $(RAND_OBJ) -o $(EXEC_DIR)/pRand $(LDFLAGS)
 
 all: $(MASTER_BIN) $(PLAYER_BIN) $(VIEW_BIN) $(VIEW_VIEJA_BIN)
 
@@ -92,6 +104,14 @@ $(PROCESS_MANAGER_ADT_OBJ): $(PROCESS_MANAGER_ADT_SRC)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(GAME_LOGIC_ADT_OBJ): $(GAME_LOGIC_ADT_SRC)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(WEST_OBJ): $(WEST_SRC)
+	@mkdir -p $(EXEC_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(RAND_OBJ): $(RAND_SRC)
 	@mkdir -p $(EXEC_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 

@@ -139,6 +139,7 @@ static bool createPlayerProcess(ProcessManagerAdt *pm, GameState *state, char *p
         if (dup2(pm->pipes[playerIndex][1], STDOUT_FILENO) == -1) {
             ERROR_EXIT("Error in dup2");
         }
+        close(pm->pipes[playerIndex][1]);
 
         execve(playerPath, args, NULL);
         ERROR_EXIT("Error in execve (player)");
