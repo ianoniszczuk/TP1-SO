@@ -2,6 +2,7 @@
 #include "sharedMemoryAdt.h"   
 #include "sharedHeaders.h"     
 #include "errorHandling.h"     
+#include "decidePlay.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,7 +21,7 @@ PlayerMemory *initPlayerMemory(int width, int height, GameState **game, GameSync
     }
 
     size_t gameTotalSize = sizeof(GameState) + width * height * sizeof(int);
-    pm->gameAdt = shmAdtOpen(GAME_STATE, gameTotalSize, O_RDWR);
+    pm->gameAdt = shmAdtOpen(GAME_STATE, gameTotalSize, O_RDONLY);
     *game = (GameState *) pm->gameAdt.addr;
 
     pm->syncAdt = shmAdtOpen(GAME_SYNC, sizeof(GameSync), O_RDWR);
@@ -66,7 +67,7 @@ bool handlePlayerTurn(GameState *game, GameSync *sync, int playerNumber) {
         return false;
     }
 
-    unsigned char movimiento = (unsigned char)(rand() % 8);
+    unsigned char movimiento = decidePlay(game, playerNumber);
     
     if (write(STDOUT_FILENO, &movimiento, sizeof(movimiento)) < 0) {
         ERROR_EXIT("Error writing movement");
